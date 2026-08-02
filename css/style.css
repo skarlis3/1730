@@ -387,15 +387,138 @@ h2 {
   .content { padding: 36px 38px 110px; }
 }
 
+/* ---- MOBILE (≤880px) -------------------------------------------
+   Two moves:
+     · the five course areas drop to a fixed bottom bar, in thumb reach
+     · the section sidebar becomes a left drawer behind a hamburger,
+       with a close button that stays put while you scroll
+   Both are built by js/nav.js. Everything here is scoped to .has-js
+   so that with JavaScript off the sidebar simply stays in the page
+   and the top nav keeps working.                                    */
+
 @media (max-width: 880px) {
   .frame { grid-template-columns: 1fr; }
   .sidenav { position: static; max-height: none; padding: 20px 22px 24px; }
-  .sidecard { display: none; }
   .sidenav ul { flex-direction: row; flex-wrap: wrap; gap: 3px; }
   .content { padding: 28px 22px 90px; }
-  .topbar { padding: 14px 22px; gap: 12px; }
+  .topbar { padding: 12px 16px; gap: 10px; }
   .reading { grid-template-columns: 1fr; gap: 10px; }
   .reading-meta > div { grid-template-columns: 1fr; gap: 1px; }
+
+  /* ---- with JS: top nav moves to the bottom bar ---- */
+  .has-js .topnav { display: none; }
+  .has-js .bottombar { display: block; }
+  /* keep the last of the page clear of the fixed bar */
+  .has-js .content { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
+
+  /* ---- hamburger ---- */
+  .has-js .burger {
+    order: -1; display: inline-flex; align-items: center; gap: 8px;
+    appearance: none; border: 0; cursor: pointer;
+    background: var(--surface-2); color: var(--ink);
+    font: inherit; font-size: 13px; font-weight: 600;
+    padding: 9px 14px; min-height: 44px; border-radius: 11px;
+  }
+  .has-js .burger:hover { background: var(--wash); }
+
+  /* ---- drawer ---- */
+  .has-js .sidenav {
+    position: fixed; z-index: 60; inset: 0 auto 0 0;
+    width: min(86vw, 360px); max-height: none;
+    padding: 0 20px calc(28px + env(safe-area-inset-bottom, 0px));
+    overflow-y: auto; overscroll-behavior: contain;
+    background: var(--surface);
+    border-radius: 0 22px 22px 0;
+    box-shadow: 24px 0 60px rgba(0, 0, 0, .28);
+    transform: translateX(-102%);
+    transition: transform .26s cubic-bezier(.32, .72, 0, 1);
+    visibility: hidden;
+  }
+  .has-js.drawer-open .sidenav { transform: translateX(0); visibility: visible; }
+  .has-js .sidecard { display: block; }
+
+  /* sticky close header — reachable however far you scroll */
+  .has-js .drawer-head {
+    position: sticky; top: 0; z-index: 2;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 14px 0 12px; margin-bottom: 6px;
+    background: var(--surface);
+  }
+  .has-js .drawer-head::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px;
+    background: linear-gradient(90deg, var(--rule), transparent 82%);
+  }
+  .has-js .drawer-title {
+    font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase;
+    color: var(--ink-2); font-weight: 600;
+  }
+  .has-js .drawer-close {
+    display: inline-flex; align-items: center; gap: 7px;
+    appearance: none; border: 0; cursor: pointer;
+    background: var(--surface-2); color: var(--ink);
+    font: inherit; font-size: 13px; font-weight: 600;
+    padding: 9px 14px; min-height: 44px; border-radius: 11px;
+  }
+  .has-js .drawer-close:hover { background: var(--wash); color: var(--accent); }
+
+  .has-js .drawer-scrim {
+    position: fixed; inset: 0; z-index: 55;
+    background: rgba(9, 13, 19, .55);
+    opacity: 0; transition: opacity .26s ease;
+  }
+  .has-js.drawer-open .drawer-scrim { opacity: 1; }
+
+  /* drawer links go back to a vertical list */
+  .has-js .sidenav ul { flex-direction: column; gap: 1px; }
+  .has-js .sidenav a { padding: 12px 12px; min-height: 44px; }
+
+  body.is-locked { position: fixed; width: 100%; top: calc(-1 * var(--scroll-lock, 0px)); }
+}
+
+/* ---- BOTTOM BAR ------------------------------------------------
+   Hidden until the mobile breakpoint. Gradient strip on top instead
+   of a border — a line there would sit under the text all the way
+   down every page.                                                 */
+
+.bottombar { display: none; }
+
+@media (max-width: 880px) {
+  .bottombar {
+    position: fixed; inset: auto 0 0 0; z-index: 40;
+    background: var(--surface);
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, .07), 0 -14px 34px rgba(0, 0, 0, .05);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .bottombar::before {
+    content: ""; position: absolute; inset: 0 0 auto; height: 2px; background: var(--grad);
+  }
+  .bottombar ul {
+    list-style: none; margin: 0 auto; padding: 6px 4px 8px;
+    max-width: 620px;
+    display: grid; grid-auto-flow: column; grid-auto-columns: 1fr;
+  }
+  .bb-item {
+    display: grid; justify-items: center; gap: 3px;
+    padding: 6px 2px; min-height: 52px;
+    text-decoration: none; color: var(--ink-2);
+    border-radius: 12px; position: relative;
+  }
+  .bb-ico {
+    display: grid; place-items: center; width: 44px; height: 30px;
+    border-radius: 99px; position: relative; line-height: 0;
+  }
+  .bb-label {
+    font-size: 10.5px; font-weight: 600; letter-spacing: .01em;
+    text-align: center; line-height: 1.15;
+  }
+  .bb-item[aria-current="page"] { color: var(--accent); }
+  .bb-item[aria-current="page"] .bb-ico::before {
+    content: ""; position: absolute; inset: 0; border-radius: 99px;
+    background: var(--grad); opacity: .16;
+  }
+  /* sections that don't exist yet: visible, clearly not a dead end */
+  .bb-item.is-wip { color: var(--ink-2); opacity: .42; cursor: default; }
+  .bb-item:not(.is-wip):hover { color: var(--ink); background: var(--surface-2); }
 }
 
 @media (max-width: 580px) {
@@ -403,6 +526,9 @@ h2 {
   .topnav { gap: 0; }
   .topnav a { padding: 7px 10px; font-size: 12px; }
   .lenses { grid-template-columns: 1fr; }
+  .burger-text, .drawer-close-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .has-js .burger, .has-js .drawer-close { padding: 10px; min-width: 44px; justify-content: center; }
+  .bb-label { font-size: 9.5px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
