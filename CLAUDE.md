@@ -18,6 +18,13 @@ removed on 2026-08-02 and should not be recreated.
   students see until they're committed and pushed.
 - **License:** CC-BY-4.0.
 
+**Test live, not locally.** The class doesn't run until Fall 2026 and no
+students have the address, so there's nothing to break by pushing a
+half-finished state. Sarah's preference is to push and check the real site.
+Local file:// checks are for a fast first look only — they miss anything to
+do with deployment, and a local fix that hasn't been pushed looks exactly
+like a fix that didn't work (this happened on 2026-08-02).
+
 ## Two design rules — do not break these
 
 Stated at the top of `css/style.css` and in `README.md`, repeated here
