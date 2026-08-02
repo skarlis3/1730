@@ -148,11 +148,22 @@ a:focus-visible, button:focus-visible {
   box-shadow: 0 2px 10px rgba(0, 0, 0, .07), 0 14px 34px rgba(0, 0, 0, .05);
 }
 
-/* Anchor jumps must not land under the sticky bar. Every unbuilt nav
-   link currently points at #main, so this fires constantly — and it is
-   also what leaves "#main" in the URL, making a later refresh open the
-   page already scrolled past the header. */
-:target, #main { scroll-margin-top: calc(var(--top-offset, 0px) + 14px); }
+/* Nothing may end up underneath the sticky bar.
+
+   Two ways that happens. Anchor jumps: every unbuilt nav link points at
+   #main, so this fires constantly — and it is also what leaves "#main"
+   in the URL, making a later refresh open the page already scrolled
+   past the header. And keyboard focus: tabbing to a link just below the
+   fold scrolls it into view, and "into view" includes the strip the bar
+   is sitting on. That second one is WCAG 2.2 SC 2.4.11, Focus Not
+   Obscured — which only became a risk when the bar turned sticky.
+
+   scroll-margin-top is what browsers honour for both. */
+:target,
+#main,
+a, button, [tabindex]:not([tabindex="-1"]) {
+  scroll-margin-top: calc(var(--top-offset, 0px) + 14px);
+}
 
 /* Course code only. The full course name lives in the sidebar card and
    the page title; repeating it here cost the bar a second line, and the
@@ -561,8 +572,15 @@ h2 {
     content: ""; position: absolute; inset: 0; border-radius: 99px;
     background: var(--grad); opacity: .16;
   }
-  /* sections that don't exist yet: visible, clearly not a dead end */
-  .bb-item.is-wip { color: var(--ink-2); opacity: .42; cursor: default; }
+  /* Sections that don't exist yet: visible, clearly not a dead end.
+     The whole item used to sit at 42% opacity, which dropped the label
+     to 2:1 — unreadable, and it's a label, not a disabled control, so
+     it gets no contrast exemption. The fade now applies only to the
+     icon, which is decorative and aria-hidden. The word stays at full
+     secondary contrast, and "not a link" is still carried by the fact
+     that these render as spans rather than anchors. */
+  .bb-item.is-wip { color: var(--ink-2); cursor: default; }
+  .bb-item.is-wip .bb-ico { opacity: .4; }
   .bb-item:not(.is-wip):hover { color: var(--ink); background: var(--surface-2); }
 }
 
