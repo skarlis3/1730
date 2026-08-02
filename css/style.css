@@ -51,8 +51,12 @@
   --f-body:    "Instrument Sans", system-ui, sans-serif;
   --f-mono:    "JetBrains Mono", ui-monospace, Menlo, monospace;
 
-  /* set by js/nav.js when a sticky offset is needed; 0 on the real site */
-  --top-offset: 0px;
+  /* Height of the sticky top bar, measured and written by js/nav.js.
+     The sidebar sticks below it and anchor jumps clear it. Measured
+     rather than hard-coded because the bar's height moves with the
+     display font, and it wraps at narrow widths without JS. The 56px
+     fallback is close enough that a no-JS page still looks right. */
+  --top-offset: 56px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -120,17 +124,40 @@ a:focus-visible, button:focus-visible {
 .skip-link:focus { left: 0; }
 
 /* ---- 3. TOP BAR ----------------------------------------------
-   Separated from the page by surface value, not a border.       */
+   Separated from the page by surface value, not a border.
+
+   Sticky at every width. It carries the only navigation on the page
+   (and the hamburger on mobile), so scrolling it away means the way
+   out of a long page is "scroll all the way back up."
+
+   Kept deliberately shallow — a bar that never leaves has to earn its
+   height every screen, not just the first one.
+
+   z-index 45 sits under the drawer scrim (55) so an open drawer still
+   dims it, and clears the bottom bar (40), which it never meets anyway.
+
+   Separation from the content sliding under it is the bottom bar's
+   shadow, inverted: elevation, not a line.                        */
 
 .topbar {
   display: flex; align-items: center; justify-content: space-between;
   gap: 30px; flex-wrap: wrap;
-  padding: 18px 34px;
+  padding: 10px 34px;
   background: var(--surface);
-  position: relative; z-index: 3;
+  position: sticky; top: 0; z-index: 45;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, .07), 0 14px 34px rgba(0, 0, 0, .05);
 }
 
-.wordmark { text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 1px; }
+/* Anchor jumps must not land under the sticky bar. Every unbuilt nav
+   link currently points at #main, so this fires constantly — and it is
+   also what leaves "#main" in the URL, making a later refresh open the
+   page already scrolled past the header. */
+:target, #main { scroll-margin-top: calc(var(--top-offset, 0px) + 14px); }
+
+/* Course code only. The full course name lives in the sidebar card and
+   the page title; repeating it here cost the bar a second line, and the
+   bar is now on screen the whole time. */
+.wordmark { text-decoration: none; color: inherit; display: inline-flex; align-items: center; }
 .wordmark-code {
   font-family: var(--f-display); font-weight: 800; font-size: 19px;
   letter-spacing: -.02em;
@@ -138,7 +165,6 @@ a:focus-visible, button:focus-visible {
   color: transparent;
   padding-right: .09em; /* background-clip:text would shear the last glyph */
 }
-.wordmark-name { font-size: 11.5px; color: var(--ink-2); letter-spacing: .02em; }
 
 .topnav { display: flex; gap: 3px; flex-wrap: wrap; }
 .topnav a {
@@ -421,18 +447,8 @@ h2 {
   .reading { grid-template-columns: 1fr; gap: 10px; }
   .reading-meta > div { grid-template-columns: 1fr; gap: 1px; }
 
-  /* ---- sticky top bar ----
-     The hamburger lives in this bar, so letting it scroll away means
-     the section menu is only reachable by scrolling back up. It stays.
-     z-index sits below the scrim (55) so an open drawer still dims it,
-     and it never meets the bottom bar (40) — opposite edges.
-     Separation is the same soft shadow the bottom bar uses, inverted:
-     elevation, not a line. No border here. */
-  .topbar {
-    padding: 12px 16px; gap: 10px;
-    position: sticky; top: 0; z-index: 45;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, .07), 0 14px 34px rgba(0, 0, 0, .05);
-  }
+  /* sticky and shadowed at every width — see section 3 */
+  .topbar { padding: 8px 16px; gap: 10px; }
 
   /* ---- with JS: top nav moves to the bottom bar ---- */
   .has-js .topnav { display: none; }

@@ -30,6 +30,19 @@
 
   root.classList.add("has-js");
 
+  /* ---------- sticky offset -----------------------------------------
+     The top bar is sticky at every width, so anything else that sticks
+     — the sidebar — and every anchor jump has to know how tall it is.
+     Measured, not hard-coded: the height moves with the display font
+     once it loads, and the bar wraps at narrow widths. Re-measured on
+     resize and after web fonts arrive.                                */
+  function measureTopbar() {
+    root.style.setProperty("--top-offset", topbar.offsetHeight + "px");
+  }
+  measureTopbar();
+  window.addEventListener("resize", measureTopbar);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(measureTopbar);
+
   /* ---------- icons ------------------------------------------------
      Carried over from the 1181 site so the two feel related, plus an
      open book for Readings, which 1181 had no equivalent for.        */
