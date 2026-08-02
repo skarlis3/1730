@@ -418,9 +418,21 @@ h2 {
   .sidenav { position: static; max-height: none; padding: 20px 22px 24px; }
   .sidenav ul { flex-direction: row; flex-wrap: wrap; gap: 3px; }
   .content { padding: 28px 22px 90px; }
-  .topbar { padding: 12px 16px; gap: 10px; }
   .reading { grid-template-columns: 1fr; gap: 10px; }
   .reading-meta > div { grid-template-columns: 1fr; gap: 1px; }
+
+  /* ---- sticky top bar ----
+     The hamburger lives in this bar, so letting it scroll away means
+     the section menu is only reachable by scrolling back up. It stays.
+     z-index sits below the scrim (55) so an open drawer still dims it,
+     and it never meets the bottom bar (40) — opposite edges.
+     Separation is the same soft shadow the bottom bar uses, inverted:
+     elevation, not a line. No border here. */
+  .topbar {
+    padding: 12px 16px; gap: 10px;
+    position: sticky; top: 0; z-index: 45;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, .07), 0 14px 34px rgba(0, 0, 0, .05);
+  }
 
   /* ---- with JS: top nav moves to the bottom bar ---- */
   .has-js .topnav { display: none; }
