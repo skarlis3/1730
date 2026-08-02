@@ -19,59 +19,28 @@
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#111722">
 </head>
-<body>
+<body data-area="course" data-page="overview">
 
 <a class="skip-link" href="#main">Skip to main content</a>
 
-<header class="topbar">
-  <a class="wordmark" href="index.html">
-    <span class="wordmark-code">ENGL 1730</span>
-  </a>
-  <nav class="topnav" aria-label="Main areas">
-    <a href="index.html" aria-current="page">Course</a>
-    <a href="#main" data-wip>Readings</a>
-    <a href="#main" data-wip>Assignments</a>
-    <a href="#main" data-wip>Calendar</a>
-    <a href="#main" data-wip>Reference</a>
-  </nav>
-  <button type="button" class="theme-toggle">Dark</button>
+<!-- Navigation is drawn by js/nav.js from the site map in js/site-nav.js.
+     There is no nav markup in this file, and no second copy to keep in
+     step. To add a page, edit js/site-nav.js and nothing else. -->
+<header class="topbar" data-site-topbar>
+  <noscript>
+    <a class="wordmark" href="index.html"><span class="wordmark-code">ENGL 1730</span></a>
+    <p class="noscript-note">Site navigation needs JavaScript. Everything below still reads without it.</p>
+  </noscript>
 </header>
 
 <div class="frame">
 
-  <nav class="sidenav" aria-label="Within Course">
-    <div class="sidecard">
-      <div class="sidecard-tile" aria-hidden="true"><span>1730</span></div>
-      <p class="sidecard-title">Contemporary American Literature</p>
-      <p class="sidecard-meta">Macomb CC · Fall 2026 · Mon evenings</p>
-      <p class="sidecard-stats"><span>new course</span><span>16 wks</span></p>
-    </div>
+  <nav class="sidenav" data-site-sidenav></nav>
 
-    <p class="sidenav-heading" id="nav-start">Start here</p>
-    <ul role="list" aria-labelledby="nav-start">
-      <li><a href="index.html" aria-current="page">Overview</a></li>
-      <li><a href="#main">What we're doing here</a></li>
-      <li><a href="#main">How class runs</a></li>
-      <li><a href="#main">Books to buy</a></li>
-    </ul>
-
-    <p class="sidenav-heading" id="nav-reading">Reading the course</p>
-    <ul role="list" aria-labelledby="nav-reading">
-      <li><a href="#main">Three ways to read</a></li>
-      <li><a href="#main">Close reading</a></li>
-      <li><a href="#main">Reader response</a></li>
-      <li><a href="#main">New historicism</a></li>
-    </ul>
-
-    <p class="sidenav-heading" id="nav-policies">Policies</p>
-    <ul role="list" aria-labelledby="nav-policies">
-      <li><a href="#main">Attendance &amp; freewrites</a></li>
-      <li><a href="#main">Late work</a></li>
-      <li><a href="#main">Generative AI</a></li>
-    </ul>
-  </nav>
-
-  <main class="content" id="main">
+  <!-- tabindex="-1" is what makes the skip link actually work: without it
+       <main> cannot take focus, so activating the link moves the address
+       bar and nothing else. -->
+  <main class="content" id="main" tabindex="-1">
 
     <section class="page-head">
       <p class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span>Start here · Overview</p>
@@ -221,7 +190,11 @@
   </main>
 </div>
 
-<script src="js/theme.js"></script>
+<!-- site-nav.js is the site map and must load first. theme.js runs last
+     because the button it wires up is built by nav.js. -->
+<script src="js/site-nav.js"></script>
 <script src="js/nav.js"></script>
+<script src="js/footer.js"></script>
+<script src="js/theme.js"></script>
 </body>
 </html>

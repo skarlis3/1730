@@ -1,41 +1,143 @@
-/* nav.js — mobile navigation for the ENGL 1730 site.
-   ------------------------------------------------------------------
-   Two pieces, both mobile-only (≤880px):
+/* nav.js — renders and runs every piece of navigation on the ENGL 1730 site.
+   ===================================================================
+   YOU SHOULD NOT NEED TO EDIT THIS FILE TO ADD A PAGE.
+   The site map lives in js/site-nav.js. This file only draws it.
 
-   1. BOTTOM BAR. The five course areas move from the top of the screen
-      to a fixed bar at the bottom, within thumb reach. It is built by
-      reading the existing .topnav in the page — there is no second
-      list of links to keep in sync, and aria-current carries over on
-      its own.
+   What it builds, all from the same data:
 
-   2. SIDEBAR DRAWER. The section sidebar slides in from the left over
-      a dimmed page, with a large, permanently visible close button.
-      The close control is in a sticky header inside the drawer, so it
-      stays reachable no matter how far down you scroll.
+     1. TOP BAR       wordmark, the five course areas, theme toggle
+     2. SIDEBAR       the course card and the current area's groups
+     3. BOTTOM BAR    the five areas again, phone only, in thumb reach
+     4. DRAWER        the sidebar as a slide-in panel, phone only
 
-   Progressive enhancement: without JavaScript the sidebar stays in the
-   page as a plain list and the top nav keeps working. Drawer styling is
-   scoped to .has-js, which is only added once this file runs.
-   ------------------------------------------------------------------ */
+   Because all four read one list, adding a page can never leave one of
+   them out of step with the others.
+
+   ---- Not-yet-built destinations ------------------------------------
+   Anything with `built: false` renders as plain text, never as a link,
+   in all four places. Two reasons, and both are rules rather than
+   preferences:
+
+     · A link announced as "Readings" that goes to the top of the page
+       you are already on misstates its own purpose. WCAG 2.4.4.
+     · Nothing that isn't clickable may look clickable — design rule 2,
+       stated at the top of css/style.css.
+
+   ---- No JavaScript --------------------------------------------------
+   Navigation is drawn here, so with scripting off there is none. The
+   page's own content still renders, and a <noscript> line offers the
+   way home. This is a deliberate trade for having one source of truth.
+   =================================================================== */
 (function () {
   "use strict";
 
-  var root = document.documentElement;
-  var MOBILE = "(max-width: 880px)";
+  var SITE = window.SITE;
+  if (!SITE) return;
 
-  var topnav  = document.querySelector(".topnav");
-  var topbar  = document.querySelector(".topbar");
-  var sidenav = document.querySelector(".sidenav");
-  if (!topbar) return;
+  var root    = document.documentElement;
+  var MOBILE  = "(max-width: 880px)";
+  var topbar  = document.querySelector("[data-site-topbar]");
+  var sidenav = document.querySelector("[data-site-sidenav]");
 
   root.classList.add("has-js");
 
-  /* ---------- sticky offset -----------------------------------------
-     The top bar is sticky at every width, so anything else that sticks
-     — the sidebar — and every anchor jump has to know how tall it is.
-     Measured, not hard-coded: the height moves with the display font
-     once it loads, and the bar wraps at narrow widths. Re-measured on
-     resize and after web fonts arrive.                                */
+  /* Which area and which page are we on? Declared on <body>, because
+     guessing from the URL breaks on GitHub Pages, where "/" and
+     "/index.html" are the same page under two names. */
+  var here     = document.body.getAttribute("data-area") || "";
+  var herePage = document.body.getAttribute("data-page") || "";
+  var area     = null;
+  SITE.areas.forEach(function (a) { if (a.id === here) area = a; });
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+
+  /* One rule for every destination on the site: a real link when the
+     page exists, plain text when it doesn't. Used by all four navs. */
+  function destination(item, cls, current) {
+    var live = item.built && item.href;
+    var n = el(live ? "a" : "span", cls + (live ? "" : " is-wip"));
+    if (live) n.href = item.href;
+    if (live && current) n.setAttribute("aria-current", "page");
+    return n;
+  }
+
+  /* ---------- 1. TOP BAR ------------------------------------------- */
+  if (topbar) {
+    topbar.setAttribute("role", "banner");
+
+    var mark = el("a", "wordmark");
+    mark.href = SITE.areas[0].href || "index.html";
+    mark.appendChild(el("span", "wordmark-code", SITE.course.code));
+    topbar.appendChild(mark);
+
+    var topnav = el("nav", "topnav");
+    topnav.setAttribute("aria-label", "Main areas");
+    SITE.areas.forEach(function (a) {
+      var n = destination(a, "", a.id === here);
+      n.textContent = a.label;
+      topnav.appendChild(n);
+    });
+    topbar.appendChild(topnav);
+
+    var toggle = el("button", "theme-toggle", "Dark");
+    toggle.type = "button";
+    topbar.appendChild(toggle);
+  }
+
+  /* ---------- 2. SIDEBAR ------------------------------------------- */
+  if (sidenav && area) {
+    sidenav.setAttribute("aria-label", area.sidebarLabel || ("Within " + area.label));
+
+    var card = el("div", "sidecard");
+    var tile = el("div", "sidecard-tile");
+    tile.setAttribute("aria-hidden", "true");
+    tile.appendChild(el("span", "", SITE.course.tile));
+    card.appendChild(tile);
+    card.appendChild(el("p", "sidecard-title", SITE.course.name));
+    card.appendChild(el("p", "sidecard-meta", SITE.course.meta));
+    var stats = el("p", "sidecard-stats");
+    SITE.course.stats.forEach(function (s) { stats.appendChild(el("span", "", s)); });
+    card.appendChild(stats);
+    sidenav.appendChild(card);
+
+    area.groups.forEach(function (group, i) {
+      /* The group label stays a <p>, not a heading, on purpose. The
+         sidebar sits before <main> in the document, so headings here
+         would put h2s above the page's h1 and wreck the outline. The
+         grouping is carried by aria-labelledby instead, which is what
+         a screen reader announces when entering the list. */
+      var id = "nav-group-" + i;
+      var head = el("p", "sidenav-heading", group.label);
+      head.id = id;
+      sidenav.appendChild(head);
+
+      var ul = el("ul");
+      ul.setAttribute("role", "list");       /* bullets are removed in CSS,
+                                                which drops list semantics
+                                                in Safari + VoiceOver */
+      ul.setAttribute("aria-labelledby", id);
+      group.items.forEach(function (item) {
+        var li = el("li");
+        var n = destination(item, "", item.id === herePage);
+        n.textContent = item.label;
+        li.appendChild(n);
+        ul.appendChild(li);
+      });
+      sidenav.appendChild(ul);
+    });
+  }
+
+  if (!topbar) return;
+
+  /* ---------- sticky offset ----------------------------------------
+     The top bar is sticky at every width, so the sidebar and every
+     anchor jump need its height. Measured rather than hard-coded: it
+     moves with the display font and wraps at narrow widths.          */
   function measureTopbar() {
     root.style.setProperty("--top-offset", topbar.offsetHeight + "px");
   }
@@ -52,18 +154,16 @@
     assignments: '<rect x="5" y="4" width="14" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 8h8M8 12h8M8 16h5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
     calendar: '<rect x="3" y="5" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 3v4M16 3v4M3 10h18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><rect x="7" y="13" width="4" height="4" rx="1" fill="none" stroke="currentColor" stroke-width="1.6"/>',
     reference: '<path d="M5 5h9l5 5v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M14 5v5h5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>',
-    policies: '<circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.9"/><line x1="12" y1="10.5" x2="12" y2="16.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="7.2" r="1.6" fill="currentColor"/>',
     fallback: '<circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/>'
   };
 
-  function iconFor(label, href) {
-    var s = (label + " " + (href || "")).toLowerCase();
-    if (/polic/.test(s))                     return ICONS.policies;
-    if (/course|home|overview/.test(s))      return ICONS.course;
-    if (/read/.test(s))                      return ICONS.readings;
-    if (/assign/.test(s))                    return ICONS.assignments;
-    if (/calendar|schedule/.test(s))         return ICONS.calendar;
-    if (/reference|resource/.test(s))        return ICONS.reference;
+  function iconFor(id, label) {
+    var s = (id + " " + label).toLowerCase();
+    if (/course|home|overview/.test(s))  return ICONS.course;
+    if (/read/.test(s))                  return ICONS.readings;
+    if (/assign/.test(s))                return ICONS.assignments;
+    if (/calendar|schedule/.test(s))     return ICONS.calendar;
+    if (/reference|resource/.test(s))    return ICONS.reference;
     return ICONS.fallback;
   }
 
@@ -71,52 +171,35 @@
     return '<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false">' + paths + "</svg>";
   }
 
-  /* ---------- 1. bottom bar, built from the existing top nav ------- */
-  if (topnav) {
-    var items = Array.prototype.slice.call(topnav.querySelectorAll("a"));
-    if (items.length) {
-      var bar = document.createElement("nav");
-      bar.className = "bottombar";
-      bar.setAttribute("aria-label", "Course areas");
+  /* ---------- 3. BOTTOM BAR ---------------------------------------- */
+  var bar = el("nav", "bottombar");
+  bar.setAttribute("aria-label", "Course areas");
+  var blist = el("ul");
+  blist.setAttribute("role", "list");   /* same reason as the sidebar lists —
+                                           this one is the whole navigation on
+                                           a phone, so losing it costs most */
+  SITE.areas.forEach(function (a) {
+    var li = el("li");
+    var n = destination(a, "bb-item", a.id === here);
+    var ico = el("span", "bb-ico");
+    ico.innerHTML = svg(iconFor(a.id, a.label));
+    n.appendChild(ico);
+    n.appendChild(el("span", "bb-label", a.label));
+    li.appendChild(n);
+    blist.appendChild(li);
+  });
+  bar.appendChild(blist);
+  document.body.appendChild(bar);
 
-      var list = document.createElement("ul");
-      items.forEach(function (a) {
-        var li = document.createElement("li");
-        var isCurrent = a.getAttribute("aria-current") === "page";
-        // sections that don't exist yet render as plain text, not dead links
-        var wip = a.hasAttribute("data-wip");
-        var label = a.textContent.trim();
-
-        var el = document.createElement(wip ? "span" : "a");
-        el.className = "bb-item" + (wip ? " is-wip" : "");
-        if (!wip) el.href = a.getAttribute("href");
-        if (isCurrent) el.setAttribute("aria-current", "page");
-        if (wip) el.setAttribute("aria-disabled", "true");
-        el.innerHTML =
-          '<span class="bb-ico">' + svg(iconFor(label, a.getAttribute("href"))) + "</span>" +
-          '<span class="bb-label">' + label + "</span>";
-
-        li.appendChild(el);
-        list.appendChild(li);
-      });
-
-      bar.appendChild(list);
-      document.body.appendChild(bar);
-    }
-  }
-
-  /* ---------- 2. sidebar drawer ------------------------------------ */
+  /* ---------- 4. DRAWER -------------------------------------------- */
   if (!sidenav) return;
 
-  var scrim = document.createElement("div");
-  scrim.className = "drawer-scrim";
+  var scrim = el("div", "drawer-scrim");
   scrim.hidden = true;
   document.body.appendChild(scrim);
 
-  // hamburger, placed at the start of the top bar
-  var burger = document.createElement("button");
+  var burger = el("button", "burger");
   burger.type = "button";
-  burger.className = "burger";
   burger.setAttribute("aria-expanded", "false");
   burger.setAttribute("aria-controls", "section-nav");
   burger.setAttribute("aria-label", "Open section menu");
@@ -128,13 +211,28 @@
 
   sidenav.id = sidenav.id || "section-nav";
 
-  // sticky close header inside the drawer
-  var head = document.createElement("div");
-  head.className = "drawer-head";
-  head.innerHTML = '<span class="drawer-title">In this section</span>';
-  var close = document.createElement("button");
+  /* The drawer needs the page behind it to be genuinely unavailable —
+     otherwise someone reading by virtual cursor rather than by Tab
+     walks straight through into the page underneath.
+
+     Done with `inert` on everything else (see setInert below), NOT with
+     role="dialog" + aria-modal. Two reasons:
+
+       · This element is a <nav>. Its implicit role is navigation, and
+         "dialog" is not a permitted override for it — that's invalid
+         ARIA, and it is the same element that has to stay a proper
+         navigation landmark on desktop, where there is no drawer.
+       · `inert` removes the background from the tab order and the
+         accessibility tree at once, which is the thing aria-modal is
+         only asking assistive tech to do. It's the stronger guarantee,
+         not the weaker one.
+
+     The hamburger's aria-expanded already says the menu is open. */
+
+  var head = el("div", "drawer-head");
+  head.appendChild(el("span", "drawer-title", "In this section"));
+  var close = el("button", "drawer-close");
   close.type = "button";
-  close.className = "drawer-close";
   close.setAttribute("aria-label", "Close section menu");
   close.innerHTML =
     '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">' +
@@ -143,14 +241,26 @@
   head.appendChild(close);
   sidenav.insertBefore(head, sidenav.firstChild);
 
-  var isOpen = false;
-  var lastFocus = null;
-  var scrollY = 0;
+  var isOpen = false, lastFocus = null, scrollY = 0;
+
+  /* Everything that is NOT the drawer. `inert` takes these out of the
+     tab order and out of the accessibility tree at the same time, which
+     aria-hidden alone would not do. */
+  function background() {
+    return [topbar, document.querySelector("main"), bar,
+            document.querySelector(".site-footer")].filter(Boolean);
+  }
+  function setInert(on) {
+    background().forEach(function (n) {
+      if (on) n.setAttribute("inert", "");
+      else n.removeAttribute("inert");
+    });
+  }
 
   function focusables() {
     return Array.prototype.filter.call(
       sidenav.querySelectorAll("a[href], button:not([disabled])"),
-      function (el) { return el.offsetParent !== null; }
+      function (e) { return e.offsetParent !== null; }
     );
   }
 
@@ -161,10 +271,10 @@
     root.classList.add("drawer-open");
     scrim.hidden = false;
     burger.setAttribute("aria-expanded", "true");
-    // freeze the page behind the drawer, remembering where we were
     scrollY = window.scrollY;
     root.style.setProperty("--scroll-lock", scrollY + "px");
     document.body.classList.add("is-locked");
+    setInert(true);
     close.focus();
   }
 
@@ -175,7 +285,9 @@
     scrim.hidden = true;
     burger.setAttribute("aria-expanded", "false");
     document.body.classList.remove("is-locked");
-    window.scrollTo(0, scrollY); // put the page back where it was
+    /* Un-inert BEFORE restoring focus — an inert element cannot take it. */
+    setInert(false);
+    window.scrollTo(0, scrollY);
     if (lastFocus && lastFocus.focus) lastFocus.focus();
   }
 
@@ -187,7 +299,6 @@
     if (!isOpen) return;
     if (e.key === "Escape") { e.preventDefault(); shut(); return; }
     if (e.key !== "Tab") return;
-    // keep focus inside the drawer while it's open
     var f = focusables();
     if (!f.length) return;
     var first = f[0], last = f[f.length - 1];
@@ -195,12 +306,11 @@
     else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
   });
 
-  // tapping a destination closes the drawer
   sidenav.addEventListener("click", function (e) {
     if (e.target.closest("a[href]")) shut();
   });
 
-  // leaving mobile width must never strand the page in a locked state
+  /* Leaving phone width must never strand the page in a locked state. */
   var mq = window.matchMedia(MOBILE);
   var onBreak = function (e) { if (!e.matches) shut(); };
   if (mq.addEventListener) mq.addEventListener("change", onBreak);

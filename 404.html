@@ -22,14 +22,17 @@
 
 <a class="skip-link" href="#main">Skip to main content</a>
 
-<header class="topbar">
-  <a class="wordmark" href="/">
-    <span class="wordmark-code">ENGL 1730</span>
-  </a>
-  <button type="button" class="theme-toggle">Dark</button>
+<!-- No data-area: this page belongs to no course area, so no sidebar is
+     drawn and no top-nav item is marked current. The navigation itself
+     still renders, so a wrong turn is recoverable. -->
+<header class="topbar" data-site-topbar>
+  <noscript>
+    <a class="wordmark" href="/"><span class="wordmark-code">ENGL 1730</span></a>
+    <p class="noscript-note">Site navigation needs JavaScript. Everything below still reads without it.</p>
+  </noscript>
 </header>
 
-<main class="content" id="main">
+<main class="content" id="main" tabindex="-1">
 
   <section class="page-head">
     <p class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span>Error 404</p>
@@ -46,6 +49,9 @@
 
 </main>
 
+<script src="/js/site-nav.js"></script>
+<script src="/js/nav.js"></script>
+<script src="/js/footer.js"></script>
 <script src="/js/theme.js"></script>
 </body>
 </html>

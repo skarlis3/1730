@@ -123,6 +123,13 @@ a:focus-visible, button:focus-visible {
 }
 .skip-link:focus { left: 0; }
 
+/* <main> carries tabindex="-1" so the skip link can actually move focus
+   to it. It is not in the tab order and cannot be reached by Tab, so
+   ringing the entire content column would be noise, not feedback — the
+   content arriving is the feedback. 2.4.7 applies to keyboard-operable
+   components; this isn't one. */
+.content:focus { outline: none; }
+
 /* ---- 3. TOP BAR ----------------------------------------------
    Separated from the page by surface value, not a border.
 
@@ -178,13 +185,27 @@ a, button, [tabindex]:not([tabindex="-1"]) {
 }
 
 .topnav { display: flex; gap: 3px; flex-wrap: wrap; }
-.topnav a {
+.topnav a,
+.topnav .is-wip {
   font-size: 13.5px; font-weight: 500; color: var(--ink-2);
   text-decoration: none; padding: 8px 14px; min-height: 24px;
   border-radius: 9px;
 }
 .topnav a:hover { color: var(--ink); background: var(--surface-2); }
 .topnav a[aria-current="page"] { color: var(--accent); font-weight: 700; }
+
+/* Sections that don't exist yet are rendered as plain text by nav.js,
+   never as links — a link announced as "Readings" that goes nowhere
+   misstates itself (WCAG 2.4.4), and design rule 2 says nothing
+   non-clickable may look clickable.
+
+   They stay at full secondary contrast. An earlier version of this idea
+   faded the whole item to 42%, which put the label at 2:1 and made it
+   unreadable. "Not a link" is carried by it not being a link — not by
+   making it hard to see. */
+.topnav .is-wip,
+.sidenav .is-wip,
+.site-footer .is-wip { cursor: default; }
 
 .theme-toggle {
   appearance: none; border: 0; cursor: pointer;
@@ -194,9 +215,20 @@ a, button, [tabindex]:not([tabindex="-1"]) {
 }
 .theme-toggle:hover { color: var(--ink); }
 
+/* With scripting off there is no navigation, because the site map is a
+   JavaScript file. Say so rather than showing an empty bar. */
+.noscript-note {
+  font-size: 12.5px; color: var(--ink-2); margin: 0;
+}
+.sidenav:empty { display: none; }
+
 /* ---- 4. FRAME + SIDEBAR --------------------------------------- */
 
-.frame { display: grid; grid-template-columns: 282px minmax(0, 1fr); align-items: start; }
+/* Single column is the base: the sidebar is drawn by nav.js, so with
+   scripting off there is nothing to put in the second track and an
+   empty 282px stripe would just sit there. */
+.frame { display: grid; grid-template-columns: 1fr; align-items: start; }
+.has-js .frame { grid-template-columns: 282px minmax(0, 1fr); }
 
 .sidenav {
   padding: 26px 22px 90px;
@@ -242,7 +274,8 @@ a, button, [tabindex]:not([tabindex="-1"]) {
 }
 .sidenav-heading:first-of-type { margin-top: 0; }
 .sidenav ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 1px; }
-.sidenav a {
+.sidenav a,
+.sidenav .is-wip {
   display: block; text-decoration: none; color: var(--ink-2);
   font-size: 14px; line-height: 1.35;
   padding: 9px 12px; min-height: 24px; border-radius: 10px;
@@ -420,7 +453,9 @@ h2 {
    then phone.                                                    */
 
 @media (max-width: 1100px) {
-  .frame { grid-template-columns: 240px minmax(0, 1fr); }
+  /* .has-js prefix required: the base rule that sets two columns is
+     itself .has-js scoped, so a bare .frame here would lose. */
+  .has-js .frame { grid-template-columns: 240px minmax(0, 1fr); }
   .content { padding: 36px 38px 110px; }
 }
 
@@ -451,7 +486,7 @@ h2 {
    and the top nav keeps working.                                    */
 
 @media (max-width: 880px) {
-  .frame { grid-template-columns: 1fr; }
+  .has-js .frame { grid-template-columns: 1fr; }
   .sidenav { position: static; max-height: none; padding: 20px 22px 24px; }
   .sidenav ul { flex-direction: row; flex-wrap: wrap; gap: 3px; }
   .content { padding: 28px 22px 90px; }
@@ -460,6 +495,13 @@ h2 {
 
   /* sticky and shadowed at every width — see section 3 */
   .topbar { padding: 8px 16px; gap: 10px; }
+
+  /* 44px minimum on touch, per the site's own standard. Both of these
+     were measuring in the thirties: the wordmark 30.8 and the toggle
+     36.3. They clear the WCAG 2.5.8 floor of 24 either way — this is
+     the stricter local rule. */
+  .wordmark { min-height: 44px; }
+  .theme-toggle { min-height: 44px; padding: 11px 14px; }
 
   /* ---- with JS: top nav moves to the bottom bar ---- */
   .has-js .topnav { display: none; }
@@ -582,6 +624,82 @@ h2 {
   .bb-item.is-wip { color: var(--ink-2); cursor: default; }
   .bb-item.is-wip .bb-ico { opacity: .4; }
   .bb-item:not(.is-wip):hover { color: var(--ink); background: var(--surface-2); }
+}
+
+/* ---- 12. SITE FOOTER -------------------------------------------
+   Structure and wording mirror the first-year-writing sites (1181 /
+   1170 / 1190) so the whole set reads as one instructor's work. Two
+   deliberate departures:
+
+   · The FYW footers rule off the brand with an <hr>. Design rule 1
+     forbids hard rules here, so the same separation is a gradient
+     fade, and the split from the page above is a gradient strip —
+     the bottom bar's treatment, reused.
+
+   · Quick links are generated from the site map in js/site-nav.js,
+     so there is no hand-kept second list. Unbuilt areas render as
+     plain text there too.
+
+   The footer sits on --surface rather than --surface-2 on purpose:
+   --ink-2 measures 7.52:1 on --surface and only 6.36:1 on
+   --surface-2, and this site targets 7:1.                        */
+
+.site-footer {
+  background: var(--surface);
+  margin-top: 70px;
+  padding: 38px 34px calc(42px + env(safe-area-inset-bottom, 0px));
+  position: relative;
+}
+/* a gradient edge, not a line */
+.site-footer::before {
+  content: ""; position: absolute; left: 0; right: 0; top: 0; height: 3px;
+  background: var(--grad);
+}
+.site-footer__inner {
+  display: grid; grid-template-columns: 2.4fr 1fr 1fr;
+  gap: 26px 34px; max-width: 1180px; align-items: start;
+}
+.site-footer__brand {
+  font-family: var(--f-display); font-weight: 700; font-size: 16px;
+  color: var(--ink); margin: 0 0 14px;
+  position: relative; padding-bottom: 14px;
+}
+/* the FYW <hr>, done as a fade */
+.site-footer__brand::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px;
+  background: linear-gradient(90deg, var(--rule), transparent 72%);
+}
+.site-footer__about p {
+  font-size: 13.5px; line-height: 1.6; color: var(--ink-2);
+  margin: 0 0 10px; max-width: 64ch;
+}
+.site-footer__about p:last-child { margin-bottom: 0; }
+.site-footer__head {
+  font-family: var(--f-body);
+  font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--ink-2); font-weight: 600; margin: 0 0 9px;
+}
+.site-footer__links ul {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-direction: column; gap: 1px;
+}
+.site-footer__links a,
+.site-footer__links .is-wip {
+  display: block; font-size: 13.5px; color: var(--ink-2);
+  text-decoration: none; padding: 7px 0; min-height: 24px;
+}
+.site-footer__links a:hover { color: var(--ink); text-decoration: underline; }
+.site-footer__about a { color: var(--accent); }
+
+@media (max-width: 880px) {
+  .site-footer { margin-top: 48px; padding: 32px 22px; }
+  .site-footer__inner { grid-template-columns: 1fr; gap: 22px; }
+  /* keep the last of the footer clear of the fixed bottom bar */
+  .has-js .site-footer {
+    padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  }
+  .site-footer__links a,
+  .site-footer__links .is-wip { min-height: 44px; padding: 11px 0; }
 }
 
 @media (max-width: 580px) {

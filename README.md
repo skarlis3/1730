@@ -38,10 +38,28 @@ likely to be read before being broken.
 | `index.html` | Course overview page |
 | `404.html` | Not-found page |
 | `css/style.css` | All styles. Tokens at the top; light is the base, dark redefines token values only |
+| `js/site-nav.js` | **The site map — the only file to edit to change navigation.** Areas, sidebar groups, footer wording |
+| `js/nav.js` | Draws the site map into all four navs: top bar, sidebar, phone bottom bar, phone drawer. Shouldn't need editing to add a page |
+| `js/footer.js` | The shared footer. Mirrors the 1181 / 1170 / 1190 wording; Quick Links come from the site map |
 | `js/theme.js` | Theme toggle. Follows the OS by default; only writes `data-theme` on an explicit override, and remembers it |
-| `js/nav.js` | Mobile navigation (≤880px): builds the bottom bar from the existing top nav, and turns the section sidebar into a drawer. Progressive enhancement — drawer styles are scoped to `.has-js` |
 | `CNAME` | Custom domain for GitHub Pages |
 | `LICENSE` | CC Attribution 4.0 |
+
+## Adding a page
+
+Open `js/site-nav.js`, find the entry, flip `built: false` to `true`, and give
+it a real `href`. That is the whole job — the top bar, the sidebar, the phone
+bottom bar, the phone drawer and the footer all update together, because they
+all read that one file.
+
+Until a page is built it renders as plain text rather than a link, everywhere.
+A link announced as "Readings" that goes to the top of the page you're already
+on misstates itself, and design rule 2 forbids things that look clickable and
+aren't.
+
+Navigation is drawn by JavaScript, so there is none with scripting off. That's
+a deliberate trade for having one source of truth; a `<noscript>` line says so
+and the page's own content still reads.
 
 ## Reusable base
 
@@ -52,10 +70,10 @@ should mean swapping the token block, not rewriting components.
 
 ## Still to do
 
-- Remaining pages (readings, assignments, calendar, reference)
-- Real nav targets — those four links point at `#main` and carry `data-wip`,
-  which greys them out in the mobile bottom bar so they don't read as dead
-  ends. Remove the attribute as each page lands.
+- Remaining pages (readings, assignments, calendar, reference) — each one is a
+  `built: true` flip in `js/site-nav.js` once the file exists
+- Screen-reader testing. The whole accessibility pass was done by measurement
+  and scripted interaction; no screen reader was ever run against the site.
 - Component set beyond card / note / reading-entry / lens
 - Decide whether tags become real filter links or stay descriptive
 - Confirm where "Lunch and Other Obscenities" should be linked from
