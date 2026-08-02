@@ -387,6 +387,23 @@ h2 {
   .content { padding: 36px 38px 110px; }
 }
 
+/* ---- DRAWER CHROME, OFF BY DEFAULT -----------------------------
+   js/nav.js builds the hamburger and the drawer's close header into
+   the page at EVERY width — it has no way to know the breakpoint, and
+   re-inserting them on resize would be worse. So each piece is hidden
+   here and switched back on inside the breakpoint, the same way
+   .bottombar is further down. Without these two lines the hamburger
+   and a stray "In this section / Close" header appear on a laptop,
+   where there is no drawer to open or close.
+   Any new mobile-only control nav.js injects needs a line here too.
+   (The scrim is exempt: it carries the `hidden` attribute, which JS
+   toggles. Giving it a display value here would need a matching
+   display inside the media query, and that would beat `hidden` and
+   leave an invisible full-page layer swallowing every click.)      */
+
+.burger,
+.drawer-head { display: none; }
+
 /* ---- MOBILE (≤880px) -------------------------------------------
    Two moves:
      · the five course areas drop to a fixed bottom bar, in thumb reach
