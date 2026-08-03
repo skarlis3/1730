@@ -25,7 +25,8 @@
 
   /* ---- CONFIG ---------------------------------------------------- */
 
-  var CALENDAR_ID = "";           /* ← paste the calendar ID here */
+  var CALENDAR_ID =
+    "d105b9ece7cf63810a43afffdb15430b9cda5c3ddbfcaea07ddd44bfd4ad5808@group.calendar.google.com";
 
   var API_KEY  = "AIzaSyAv4RBdi3zx-8hCIXBpzYLb7oT9XTUL6tY";
   var TIMEZONE = "America/Detroit";
@@ -409,12 +410,11 @@
   }
 
   if (!CALENDAR_ID) {
-    /* Not configured yet. Hide the Google link too — until the ID is
-       set it points at whoever's own calendar is signed in, which is
-       worse than no link. A genuine load failure keeps it, because
-       there it actually goes to the class calendar. */
-    var link = document.getElementById("cal-open-link");
-    if (link) link.hidden = true;
+    /* Not configured yet. Hide the Google links too — before the ID is
+       set they point nowhere useful. A genuine load failure keeps them,
+       because there they do go to the class calendar. */
+    var links = document.querySelector(".cal-links");
+    if (links) links.hidden = true;
     fail("The calendar isn't set up yet.",
          "It'll appear here once the class calendar is connected.");
     return;

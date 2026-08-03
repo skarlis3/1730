@@ -22,6 +22,9 @@
 
 /* ---- the Google Calendar link ---------------------------- */
 
+.cal-links {
+  display: flex; gap: 10px; flex-wrap: wrap; margin: 0 0 26px;
+}
 .cal-open {
   display: inline-flex; align-items: center; gap: 9px;
   background: var(--surface); color: var(--ink);
@@ -29,10 +32,12 @@
   font-size: 14px; font-weight: 600;
   padding: 11px 16px; min-height: 44px;
   border-radius: 11px; box-shadow: var(--lift);
-  margin: 0 0 26px;
 }
 .cal-open:hover { color: var(--accent); }
 .cal-open svg { flex: none; }
+/* the secondary of the two — quieter, still a real target */
+.cal-open--add { background: transparent; box-shadow: none; color: var(--ink-2); }
+.cal-open--add:hover { background: var(--surface); color: var(--accent); }
 
 /* ---- tabs ------------------------------------------------- */
 
