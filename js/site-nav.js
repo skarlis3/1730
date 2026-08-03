@@ -112,10 +112,17 @@
       {
         id: "readings",
         label: "Readings",
-        href: "",
-        built: false,
+        href: "readings.html",
+        built: true,
         sidebarLabel: "Within Readings",
-        groups: []
+        groups: [
+          {
+            label: "Readings",
+            items: [
+              { id: "reading-list", label: "The reading list", href: "readings.html", built: true }
+            ]
+          }
+        ]
       },
 
       {

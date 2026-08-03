@@ -423,6 +423,29 @@ h2 {
 .reading-meta dd { margin: 0; font-size: 14.5px; }
 .reading-note { font-size: 14.5px; color: var(--ink-2); margin: 0; max-width: 62ch; line-height: 1.55; }
 
+/* ---- how to reach a text ---------------------------------------
+   Two kinds of entry sit in this list and they must never be
+   confused for one another:
+
+     · a LINK — library permalinks and the open-web original. These
+       are stable and safe to point at.
+     · a NOTE — "purchased text", "posted on Canvas". Deliberately
+       NOT links. Canvas addresses change every time a course is
+       re-run, so linking to them guarantees dead links each term.
+
+   Design rule 2 does the enforcing: the links carry the site's
+   ordinary underline, the notes carry none and sit in secondary
+   ink. Nothing that isn't clickable may look clickable, and the
+   distinction here is the difference between a reader getting to
+   the reading and a reader getting a 404. Do not "tidy" these into
+   matching styles.                                                */
+
+.access { list-style: none; margin: 0; padding: 0;
+          display: flex; flex-direction: column; gap: 4px; }
+.access li { margin: 0; }
+.access-note { color: var(--ink-2); }
+.access a { color: var(--accent); }
+
 /* online-native texts keep their own byline phrasing */
 .reading[data-form="post"] .reading-byline::before,
 .reading[data-form="fic"] .reading-byline::before { content: "posted by "; }
