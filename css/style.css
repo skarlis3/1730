@@ -123,6 +123,15 @@ a:focus-visible, button:focus-visible {
 }
 .skip-link:focus { left: 0; }
 
+/* Read aloud, never seen. For the words that carry meaning a sighted
+   reader gets from position or colour — "(today)" on the calendar's
+   current date, for instance, which is otherwise only a background
+   tint. Not the same as hiding something: this text is *for* someone. */
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+}
+
 /* <main> carries tabindex="-1" so the skip link can actually move focus
    to it. It is not in the tab order and cannot be reached by Tab, so
    ringing the entire content column would be noise, not feedback — the

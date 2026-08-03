@@ -130,10 +130,17 @@
       {
         id: "calendar",
         label: "Calendar",
-        href: "",
-        built: false,
+        href: "calendar.html",
+        built: true,
         sidebarLabel: "Within Calendar",
-        groups: []
+        groups: [
+          {
+            label: "Calendar",
+            items: [
+              { id: "calendar", label: "Class calendar", href: "calendar.html", built: true }
+            ]
+          }
+        ]
       },
 
       {

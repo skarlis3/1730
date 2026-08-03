@@ -1,0 +1,248 @@
+/* calendar.css — the course calendar page.
+   ============================================================
+   Loaded only by calendar.html. Everything styles through the
+   tokens in style.css, so a course palette swap carries this
+   page with it.
+
+   Both site rules apply and are easy to break here:
+
+   1. NO HARD RULES. A month grid wants borders. It doesn't get
+      them — days are separated by surface value and spacing,
+      and the grid reads as tiles rather than a ruled table.
+
+   2. NOTHING NON-CLICKABLE MAY LOOK CLICKABLE. Event chips ARE
+      buttons, so they may look like buttons. Day numbers are
+      not, so they stay plain text.
+
+   Contrast note: secondary text sits on --surface (7.52:1),
+   never on --surface-2 (6.36:1), which misses the 7:1 target.
+   ============================================================ */
+
+.cal-intro { color: var(--ink-2); max-width: 62ch; margin: 0 0 22px; }
+
+/* ---- the Google Calendar link ---------------------------- */
+
+.cal-open {
+  display: inline-flex; align-items: center; gap: 9px;
+  background: var(--surface); color: var(--ink);
+  text-decoration: none;
+  font-size: 14px; font-weight: 600;
+  padding: 11px 16px; min-height: 44px;
+  border-radius: 11px; box-shadow: var(--lift);
+  margin: 0 0 26px;
+}
+.cal-open:hover { color: var(--accent); }
+.cal-open svg { flex: none; }
+
+/* ---- tabs ------------------------------------------------- */
+
+.cal-tabs { display: flex; gap: 4px; margin: 0 0 18px; flex-wrap: wrap; }
+.cal-tab {
+  appearance: none; border: 0; cursor: pointer;
+  background: transparent; color: var(--ink-2);
+  font: inherit; font-size: 14px; font-weight: 600;
+  padding: 10px 16px; min-height: 44px; border-radius: 11px;
+}
+.cal-tab:hover { color: var(--ink); background: var(--surface); }
+.cal-tab.is-on {
+  background: var(--surface); color: var(--accent);
+  box-shadow: var(--lift);
+}
+
+/* ---- month controls --------------------------------------- */
+
+.cal-controls {
+  display: flex; align-items: center; gap: 8px;
+  margin: 0 0 14px; flex-wrap: wrap;
+}
+.cal-nav, .cal-today {
+  appearance: none; border: 0; cursor: pointer;
+  background: var(--surface); color: var(--ink);
+  font: inherit; font-size: 14px; font-weight: 600;
+  min-width: 44px; min-height: 44px; padding: 10px 14px;
+  border-radius: 11px; box-shadow: var(--lift);
+}
+.cal-nav:hover, .cal-today:hover { color: var(--accent); }
+#cal-month-label {
+  font-family: var(--f-display); font-weight: 700; font-size: 19px;
+  margin: 0 6px; min-width: 9.5ch;
+}
+
+/* ---- month grid ------------------------------------------- */
+
+/* table-layout: fixed is load-bearing, not tidiness. Without it the
+   columns size to their content, the widest event title sets the
+   column width, and the grid blows past the viewport — 322px of
+   horizontal overflow on a phone before this was added. Fixed layout
+   makes all seven columns equal and lets the chip titles ellipsis
+   instead of pushing. */
+.cal-grid {
+  width: 100%; table-layout: fixed;
+  border-collapse: separate; border-spacing: 4px;
+}
+.cal-caption {
+  /* the visible month name is in the controls above; this is the
+     table's own name for anyone listing tables */
+  position: absolute; width: 1px; height: 1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+}
+.cal-grid th {
+  font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--ink-2); font-weight: 600;
+  padding: 6px 4px; text-align: left;
+}
+.cal-grid th abbr { text-decoration: none; }
+
+.cal-day {
+  vertical-align: top;
+  width: 14.28%; height: 108px;
+  background: var(--surface);
+  border-radius: 12px; padding: 7px 7px 8px;
+}
+/* Days from the neighbouring months are told apart by having no tile
+   behind them, not by being faded. Dimming the number with opacity
+   dropped it to about 2.9:1 — the same mistake the bottom bar's
+   placeholder labels made. Surface value does the work; the text
+   stays readable at 6.96:1. */
+.cal-day.is-outside { background: transparent; }
+.cal-day.is-outside .cal-daynum { color: var(--ink-2); font-weight: 500; }
+.cal-day.is-today { background: var(--wash); }
+
+.cal-daynum {
+  display: block; font-size: 12.5px; font-weight: 700;
+  color: var(--ink); margin: 0 0 5px;
+}
+.cal-day.is-today .cal-daynum { color: var(--accent); }
+
+/* ---- event chips ------------------------------------------ */
+
+.cal-chip {
+  display: block; width: 100%; text-align: left;
+  appearance: none; border: 0; cursor: pointer;
+  background: var(--surface-2); color: var(--ink);
+  font: inherit; font-size: 11.5px; line-height: 1.3;
+  padding: 5px 7px; border-radius: 7px; margin: 0 0 3px;
+  min-height: 24px;
+}
+.cal-chip:hover { background: var(--wash); color: var(--accent); }
+.cal-chip-time {
+  display: block; font-size: 10px; font-weight: 700;
+  letter-spacing: .04em; color: var(--ink);
+}
+.cal-chip-title {
+  display: block;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.cal-more {
+  appearance: none; border: 0; cursor: pointer; background: transparent;
+  font: inherit; font-size: 11px; font-weight: 600; color: var(--accent);
+  padding: 4px 2px; min-height: 24px; text-align: left;
+}
+.cal-more:hover { text-decoration: underline; }
+
+/* ---- upcoming --------------------------------------------- */
+
+.cal-up-list, .cal-up-events, .cal-dlg-list {
+  list-style: none; margin: 0; padding: 0;
+}
+.cal-up-list { display: flex; flex-direction: column; gap: 14px; }
+.cal-up-day {
+  background: var(--surface); border-radius: var(--radius);
+  padding: 16px 18px; box-shadow: var(--lift);
+  position: relative; overflow: hidden;
+}
+.cal-up-day::before {
+  content: ""; position: absolute; inset: 0 auto 0 0; width: 4px;
+  background: var(--grad);
+}
+.cal-up-date {
+  display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+  margin: 0 0 9px;
+}
+.cal-up-date-main {
+  font-family: var(--f-display); font-weight: 600; font-size: 16px;
+  color: var(--ink);
+}
+.cal-up-when {
+  font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase;
+  font-weight: 600; color: var(--ink-2);
+}
+.cal-up-events { display: flex; flex-direction: column; gap: 3px; }
+.cal-up-item {
+  display: flex; align-items: baseline; gap: 12px; width: 100%;
+  text-align: left; appearance: none; border: 0; cursor: pointer;
+  background: transparent; color: var(--ink);
+  font: inherit; font-size: 14px;
+  padding: 9px 10px; border-radius: 9px; min-height: 44px;
+}
+.cal-up-item:hover { background: var(--surface-2); color: var(--accent); }
+.cal-up-time {
+  flex: none; min-width: 7.5ch;
+  font-size: 11.5px; font-weight: 700; color: var(--ink-2);
+}
+.cal-up-title { flex: 1 1 auto; }
+
+.cal-empty, .cal-fail-msg, .cal-fail-detail {
+  color: var(--ink-2); margin: 0 0 6px; font-size: 15px;
+}
+.cal-fail-msg { color: var(--ink); font-weight: 600; }
+
+/* ---- dialog ------------------------------------------------ */
+
+.cal-scrim {
+  position: fixed; inset: 0; z-index: 55;
+  background: rgba(9, 13, 19, .55);
+}
+.cal-dialog {
+  position: fixed; z-index: 60;
+  left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: min(92vw, 460px); max-height: 82vh; overflow-y: auto;
+  background: var(--surface); color: var(--ink);
+  border-radius: 18px; padding: 20px 22px 24px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .32);
+}
+.cal-dialog-head {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 14px; margin: 0 0 12px;
+}
+#cal-dialog-title {
+  font-family: var(--f-display); font-weight: 700; font-size: 19px;
+  line-height: 1.25; margin: 0;
+}
+.cal-dialog-close {
+  flex: none; appearance: none; border: 0; cursor: pointer;
+  background: var(--surface-2); color: var(--ink);
+  font: inherit; font-size: 13px; font-weight: 600;
+  min-width: 44px; min-height: 44px; padding: 10px 14px; border-radius: 11px;
+}
+.cal-dialog-close:hover { color: var(--accent); }
+.cal-dlg-when {
+  font-size: 12.5px; font-weight: 700; letter-spacing: .04em;
+  color: var(--ink-2); margin: 0 0 10px;
+}
+.cal-dlg-loc { font-size: 14px; color: var(--ink-2); margin: 0 0 10px; }
+.cal-dialog p { font-size: 15px; line-height: 1.55; margin: 0 0 9px; }
+.cal-dlg-none { color: var(--ink-2); font-style: italic; }
+.cal-dlg-list { display: flex; flex-direction: column; gap: 3px; }
+
+/* ---- narrow ------------------------------------------------ */
+
+@media (max-width: 880px) {
+  /* A seven-column month grid cannot survive a phone. Below the
+     breakpoint the grid drops its fixed height and the chips lose
+     their times, keeping the shape readable; Upcoming is the view
+     that actually works small, so it leads. */
+  .cal-day { height: auto; min-height: 66px; padding: 6px 5px; }
+  .cal-grid { border-spacing: 3px; }
+  .cal-chip-time { display: none; }
+  .cal-chip { font-size: 10.5px; padding: 4px 5px; }
+  .cal-grid th { font-size: 9.5px; letter-spacing: .08em; }
+  #cal-month-label { font-size: 17px; }
+}
+
+@media (max-width: 580px) {
+  .cal-day { min-height: 54px; }
+  .cal-chip-title { font-size: 10px; }
+  .cal-up-time { min-width: 100%; }
+  .cal-up-item { flex-wrap: wrap; gap: 2px; }
+}

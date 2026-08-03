@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calendar · ENGL 1730 Contemporary American Literature</title>
+<meta name="description" content="Class calendar for ENGL 1730 Contemporary American Literature at Macomb Community College — what's due and when.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/calendar.css">
+
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png">
+<link rel="apple-touch-icon" href="/icons/icon-180x180.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#111722">
+</head>
+<body data-area="calendar" data-page="calendar">
+
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="topbar" data-site-topbar>
+  <noscript>
+    <a class="wordmark" href="index.html"><span class="wordmark-code">ENGL 1730</span></a>
+    <p class="noscript-note">Site navigation needs JavaScript. Everything below still reads without it.</p>
+  </noscript>
+</header>
+
+<div class="frame">
+
+  <nav class="sidenav" data-site-sidenav></nav>
+
+  <main class="content" id="main" tabindex="-1">
+
+    <section class="page-head">
+      <p class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span>Calendar</p>
+      <h1>What's <em>coming up</em></h1>
+      <p class="deck">Everything on the class calendar, pulled in live.</p>
+      <div class="head-rule" aria-hidden="true"></div>
+    </section>
+
+    <div id="calendar">
+
+      <p class="cal-intro">This is the same calendar you can add to your own phone or laptop. Nothing here needs an account — but if you'd rather have it alongside your other commitments, open it in Google Calendar and subscribe.</p>
+
+      <!-- Deliberately outside the part JavaScript replaces: if the feed
+           fails, this link is still here and a student is never stranded.
+           The href is filled in during setup, alongside the calendar ID
+           in js/calendar.js. -->
+      <a class="cal-open" id="cal-open-link"
+         href="https://calendar.google.com/calendar/r"
+         target="_blank" rel="noopener">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true" focusable="false">
+          <rect x="3" y="4.5" width="18" height="17" rx="2.5"></rect>
+          <path d="M8 2.5v4M16 2.5v4M3 10h18" stroke-linecap="round"></path>
+        </svg>
+        Open in Google Calendar
+      </a>
+
+      <!-- Shown while loading, and left in place carrying the reason if
+           the calendar can't be reached. aria-live so the change is
+           announced rather than just appearing. -->
+      <div id="cal-status" role="status" aria-live="polite">
+        <p class="cal-fail-msg">Loading the calendar…</p>
+      </div>
+
+      <div id="cal-views" hidden>
+
+        <div class="cal-tabs" role="tablist" aria-label="Calendar views">
+          <button type="button" class="cal-tab is-on" id="tab-upcoming"
+                  role="tab" aria-selected="true" aria-controls="panel-upcoming">Upcoming</button>
+          <button type="button" class="cal-tab" id="tab-month"
+                  role="tab" aria-selected="false" aria-controls="panel-month" tabindex="-1">Month</button>
+        </div>
+
+        <div id="panel-upcoming" role="tabpanel" tabindex="0"
+             aria-labelledby="tab-upcoming">
+          <div id="cal-upcoming"></div>
+        </div>
+
+        <div id="panel-month" role="tabpanel" tabindex="0"
+             aria-labelledby="tab-month" hidden>
+          <div class="cal-controls">
+            <button type="button" class="cal-nav" id="cal-prev" aria-label="Previous month">←</button>
+            <span id="cal-month-label"></span>
+            <button type="button" class="cal-nav" id="cal-next" aria-label="Next month">→</button>
+            <button type="button" class="cal-today" id="cal-today">Today</button>
+          </div>
+          <div id="cal-month"></div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div class="cal-scrim" id="cal-scrim" hidden></div>
+<div class="cal-dialog" id="cal-dialog" role="dialog" aria-modal="true"
+     aria-labelledby="cal-dialog-title" hidden>
+  <div class="cal-dialog-head">
+    <h2 id="cal-dialog-title">Event</h2>
+    <button type="button" class="cal-dialog-close" id="cal-dialog-close">Close</button>
+  </div>
+  <div id="cal-dialog-body"></div>
+</div>
+
+<script src="js/site-nav.js"></script>
+<script src="js/nav.js"></script>
+<script src="js/footer.js"></script>
+<script src="js/calendar.js"></script>
+<script src="js/theme.js"></script>
+</body>
+</html>
