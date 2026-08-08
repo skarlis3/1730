@@ -865,9 +865,16 @@ h2 {
 }
 
 /* Two-line page title: a smaller line above the gradient word.
-   "Contemporary American" is the course, "Literature" is the point. */
+   "Contemporary American" is the course, "Literature" is the point.
+
+   .h1-hero is only on the home page. Other pages keep the base h1 size --
+   "Late work" set this large would shout. */
+.h1-hero { font-size: clamp(3.4rem, 8.4vw, 6rem); }
+
 .page-head h1 .h1-over {
   display: block;
-  font-size: .44em; font-weight: 600; letter-spacing: -.01em;
-  color: var(--ink-2); margin-bottom: .12em;
+  /* smaller fraction than before, because .h1-hero grew the parent: the point
+     was to enlarge "Literature", not the line above it */
+  font-size: .32em; font-weight: 600; letter-spacing: -.01em;
+  color: var(--ink-2); margin-bottom: .1em;
 }
