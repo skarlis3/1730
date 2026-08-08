@@ -828,7 +828,15 @@ h2 {
 .sidenav > .wordmark .wordmark-code { font-size: inherit; }
 .sidenav > .theme-toggle {
   display: block; width: 100%; text-align: left;
-  margin: 0 0 18px;
+  margin: 0 0 22px;          /* air between the control and the divider */
+}
+
+/* Gradient hairline under the theme control. Same device as .head-rule --
+   the design rules forbid a high-contrast line but allow a gradient edge --
+   set thin and slightly held back so it separates without announcing itself. */
+.sidenav-rule {
+  height: 2px; width: 100%; margin: 0 0 20px;
+  background: var(--grad); opacity: .55; border-radius: 99px;
 }
 
 /* The burger moved out of the top bar into the phone bottom bar, where it
@@ -905,5 +913,31 @@ h2 {
   .bb-menu .burger:hover,
   .bb-menu .burger[aria-expanded="true"] {
     color: var(--accent); background: var(--surface-2);
+  }
+}
+
+@media (min-width: 881px) {
+  /* Full-height sidebar rail.
+
+     The base rule uses align-self: start, so the surface was only as tall as
+     the nav itself -- on a short nav that left the panel stopping partway down
+     the window with empty page below it. Aesthetic, per Sarah, but it also
+     made the sidebar read as a floating box rather than as the edge of the
+     page.
+
+     height rather than min-height, so the sticky rail is exactly the viewport
+     and its own overflow-y: auto takes over if the nav ever outgrows it.
+     dvh with a vh fallback: they are identical on desktop, and dvh is correct
+     if a desktop browser ever grows retracting chrome.
+
+     Scoped to >880px on purpose. Below that the sidebar becomes the phone
+     drawer (position: fixed, inset 0 auto 0 0 -- already full height), and a
+     forced viewport height on the static tablet variant would leave a tall
+     empty rail. */
+  .sidenav {
+    align-self: stretch;
+    height: 100vh;
+    height: 100dvh;
+    max-height: 100dvh;
   }
 }

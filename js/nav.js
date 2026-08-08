@@ -107,6 +107,14 @@
     toggle.type = "button";
     sidenav.appendChild(toggle);
 
+    /* Divider between the theme control and the navigation proper. A GRADIENT
+       hairline, not a line: the site's first design rule forbids high-contrast
+       rules but allows gradient edges, and .head-rule already establishes the
+       device. aria-hidden because it separates visually and says nothing. */
+    var rule = el("div", "sidenav-rule");
+    rule.setAttribute("aria-hidden", "true");
+    sidenav.appendChild(rule);
+
     /* A route back to the front page from inside any area.
 
        The sidebar only ever draws the CURRENT area's groups, so from inside
