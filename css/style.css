@@ -747,3 +747,41 @@ h2 {
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
 }
+
+/* ---------------------------------------------------------------
+   .policy-grid — a two-column at-a-glance table (What / Policy).
+
+   Built as CSS grid with ARIA table roles rather than <table>:
+   Sarah's rule is that <table> is only for real tabular data, and
+   grid + roles is the documented alternative. Same pattern as the
+   1170 resource pages, but WITHOUT their border lines — this site's
+   first design rule forbids hard rules, so rows separate by surface
+   value instead. The 580px breakpoint matches the rest of the site.
+   --------------------------------------------------------------- */
+.policy-grid {
+  display: grid; grid-template-columns: minmax(11rem, 1fr) 2fr;
+  border-radius: var(--radius); overflow: hidden;
+  margin: 24px 0 34px; box-shadow: var(--lift);
+}
+.policy-grid > div { display: contents; }
+.policy-grid .pg-h {
+  background: var(--surface-2); color: var(--accent);
+  font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+  font-weight: 700; padding: 12px 18px;
+}
+.policy-grid .pg-what,
+.policy-grid .pg-rule { padding: 16px 18px; background: var(--surface); }
+.policy-grid .pg-what { font-weight: 700; }
+.policy-grid .pg-rule { color: var(--ink-2); }
+/* Alternating surface value is the only row separator. No lines. */
+.policy-grid > div:nth-of-type(even) .pg-what,
+.policy-grid > div:nth-of-type(even) .pg-rule { background: var(--wash); }
+.policy-grid ul { margin: 0; padding-left: 1.1em; }
+.policy-grid li { margin: 2px 0; }
+
+@media (max-width: 580px) {
+  .policy-grid { grid-template-columns: 1fr; }
+  .policy-grid .pg-h { display: none; }
+  .policy-grid .pg-what { padding-bottom: 2px; }
+  .policy-grid .pg-rule { padding-top: 2px; }
+}

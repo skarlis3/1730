@@ -102,28 +102,26 @@
             label: "Policies",
             items: [
               { id: "attendance", label: "Attendance & freewrites", href: "", built: false },
-              { id: "late",       label: "Late work",               href: "", built: false },
+              { id: "late",       label: "Late work",               href: "late-work.html", built: true },
               { id: "ai",         label: "Generative AI",           href: "", built: false }
             ]
           }
         ]
       },
 
-      {
-        id: "readings",
-        label: "Readings",
-        href: "readings.html",
-        built: true,
-        sidebarLabel: "Within Readings",
-        groups: [
-          {
-            label: "Readings",
-            items: [
-              { id: "reading-list", label: "The reading list", href: "readings.html", built: true }
-            ]
-          }
-        ]
-      },
+      /* ---- Readings: deliberately NOT in the nav ----------------------
+         readings.html still exists and still works at its own URL. It was
+         pulled from navigation on 2026-08-07, not deleted: the reading list
+         now lives in Canvas, and the page is kept as a source of per-text
+         access links (library links, which copy is posted) for building the
+         Canvas reading pages.
+
+         This is NOT an oversight — do not add it back. `built: false` would
+         be wrong too: that renders the label as plain text, which still shows
+         students an area that isn't theirs. The entry has to be absent.
+         `area` is null-guarded in nav.js (line ~93), so readings.html renders
+         without a sidebar rather than erroring.
+         ---------------------------------------------------------------- */
 
       {
         id: "assignments",
