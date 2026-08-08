@@ -849,9 +849,25 @@ h2 {
 }
 
 /* The question that used to be the page's h1. It moved into the pull quote on
-   2026-08-08 so the h1 could name the course. Set larger than the line under
-   it so the quote reads question-then-answer rather than as two equal lines. */
+   2026-08-08 so the h1 could name the course. It carries the same gradient
+   text treatment as `h1 em`, so it still reads as the course's headline
+   question rather than as the first of two equal sentences.
+
+   The padding/margin pair is not decorative: background-clip:text paints only
+   as far as the glyph box, which shears the last character, and the negative
+   margin puts following text back where it was. Same fix as h1 em. */
 .pull .pull-lead {
-  font-weight: 700; margin: 0 0 .35em;
-  color: var(--ink);
+  font-weight: 700; margin: 0 0 .3em;
+  background: var(--grad); -webkit-background-clip: text; background-clip: text;
+  color: transparent;
+  padding-right: .09em; margin-right: -.06em;
+  -webkit-box-decoration-break: clone; box-decoration-break: clone;
+}
+
+/* Two-line page title: a smaller line above the gradient word.
+   "Contemporary American" is the course, "Literature" is the point. */
+.page-head h1 .h1-over {
+  display: block;
+  font-size: .44em; font-weight: 600; letter-spacing: -.01em;
+  color: var(--ink-2); margin-bottom: .12em;
 }
