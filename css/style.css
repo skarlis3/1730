@@ -875,20 +875,34 @@ h2 {
   -webkit-box-decoration-break: clone; box-decoration-break: clone;
 }
 
-/* Two-line page title: a smaller line above the gradient word.
-   "Contemporary American" is the course, "Literature" is the point.
+/* Two-line home page title. Sarah picked this treatment on 2026-08-08 from five
+   mocked up in mockups/title-treatments.html.
 
-   .h1-hero is only on the home page. Other pages keep the base h1 size --
-   "Late work" set this large would shout. */
-.h1-hero { font-size: clamp(3.4rem, 8.4vw, 6rem); }
+   What was wrong with the previous version: at .32em the course name ended at
+   almost exactly the same x as "Literature" below it -- near-identical widths
+   read as alignment that failed rather than as two deliberate sizes. And
+   because "Literature" is italic, its lean starts optically further right than
+   an upright line above it, so the left edge looked ragged even though both
+   began at the same x.
+
+   The fix is to stop inviting the comparison: the course name becomes a small
+   tracked label rather than a scaled-down version of the line below it, so the
+   two are obviously doing different jobs, and "Literature" gets bigger.
+
+   .h1-hero is only on the home page -- "Late work" set this large would shout. */
+.h1-hero { font-size: clamp(3.6rem, 9vw, 6.4rem); }
 
 .page-head h1 .h1-over {
   display: block;
-  /* smaller fraction than before, because .h1-hero grew the parent: the point
-     was to enlarge "Literature", not the line above it */
-  font-size: .32em; font-weight: 600; letter-spacing: -.01em;
-  color: var(--ink-2); margin-bottom: .1em;
+  font-size: .19em; font-weight: 700; letter-spacing: .2em;
+  text-transform: uppercase; color: var(--accent);
+  margin-bottom: .5em;
 }
+
+/* Optical alignment, not spacing: the italic's slant means its glyph starts
+   right of the box edge, so a hair of negative margin lines the two left edges
+   up by eye. Same trick as h1 em's padding/margin pair, different reason. */
+.page-head .h1-hero em { margin-left: -.045em; }
 
 @media (max-width: 880px) {
   /* The drawer opener, when it is the ONLY thing in the bottom bar.
