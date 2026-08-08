@@ -76,7 +76,14 @@
     return Math.round((midnight(d) - midnight(new Date())) / 86400000);
   }
   function timeOf(ev) {
-    if (isAllDay(ev)) return "All day";
+    /* All-day events show NO label at all. Sarah, 8 Aug 2026: this calendar is a
+       course schedule -- what we are doing that day -- and nothing on it has a
+       time, so "All day" was on every single event, saying nothing.
+
+       Returns "" rather than "All day"; every caller skips the element when this
+       is empty, so there is no stray empty span left to take up space. A real
+       time still renders if an event ever has one. */
+    if (isAllDay(ev)) return "";
     return startOf(ev).toLocaleTimeString("en-US",
       { hour: "numeric", minute: "2-digit", timeZone: TIMEZONE });
   }
@@ -196,7 +203,8 @@
   function chip(ev) {
     var b = el("button", "cal-chip");
     b.type = "button";
-    b.appendChild(el("span", "cal-chip-time", timeOf(ev)));
+    var chipTime = timeOf(ev);
+    if (chipTime) b.appendChild(el("span", "cal-chip-time", chipTime));
     b.appendChild(el("span", "cal-chip-title", ev.summary || "(untitled)"));
     b.addEventListener("click", function () { openEvent(ev); });
     return b;
@@ -248,7 +256,8 @@
         var item = el("li");
         var b = el("button", "cal-up-item");
         b.type = "button";
-        b.appendChild(el("span", "cal-up-time", timeOf(ev)));
+        var upTime = timeOf(ev);
+        if (upTime) b.appendChild(el("span", "cal-up-time", upTime));
         b.appendChild(el("span", "cal-up-title", ev.summary || "(untitled)"));
         b.addEventListener("click", function () { openEvent(ev); });
         item.appendChild(b);
@@ -301,9 +310,10 @@
   function openEvent(ev) {
     dlgBody.textContent = "";
     var d = startOf(ev);
-    dlgBody.appendChild(el("p", "cal-dlg-when",
-      DAYS[d.getDay()] + ", " + MONTHS[d.getMonth()] + " " + d.getDate() +
-      " · " + timeOf(ev)));
+    var when = DAYS[d.getDay()] + ", " + MONTHS[d.getMonth()] + " " + d.getDate();
+    var t = timeOf(ev);
+    if (t) when += " · " + t;      /* no trailing separator when there is no time */
+    dlgBody.appendChild(el("p", "cal-dlg-when", when));
     if (ev.location) dlgBody.appendChild(el("p", "cal-dlg-loc", ev.location));
     if (ev.description) {
       /* Descriptions are author-written free text and can contain markup.
@@ -326,7 +336,8 @@
       var li = el("li");
       var b = el("button", "cal-up-item");
       b.type = "button";
-      b.appendChild(el("span", "cal-up-time", timeOf(ev)));
+      var popTime = timeOf(ev);
+      if (popTime) b.appendChild(el("span", "cal-up-time", popTime));
       b.appendChild(el("span", "cal-up-title", ev.summary || "(untitled)"));
       b.addEventListener("click", function () { openEvent(ev); });
       li.appendChild(b);
