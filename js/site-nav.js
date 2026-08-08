@@ -72,80 +72,57 @@
 
     /* The five course areas, in top-nav order. Each carries the sidebar
        that appears while you are inside it. */
+    /* ONE area, so the sidebar always shows the whole site.
+
+       Until 2026-08-08 this was several top-level areas (Course, Calendar,
+       Assignments, Reference) and the sidebar drew only the current one, with
+       the top bar as the way between them. Removing the top bar therefore
+       orphaned the Calendar on desktop: nothing linked to it, because the
+       phone bottom bar is display:none above 880px.
+
+       Collapsing to a single area makes that impossible by construction --
+       every page is always one click away, and there is no "you are in the
+       wrong section to see this" state. Groups do the organising instead.
+
+       Policies stays its own group rather than merging into "Class info &
+       policies": that label is long for a sidebar heading, and policies are
+       what students go looking for by name. */
     areas: [
       {
         id: "course",
         label: "Course",
         href: "index.html",
         built: true,
-        sidebarLabel: "Within Course",
+        sidebarLabel: "This site",
         groups: [
           {
             label: "Start here",
             items: [
-              { id: "overview",   label: "Overview",  href: "index.html", built: true }
+              { id: "overview", label: "Overview",       href: "index.html",     built: true }
+            ]
+          },
+          {
+            label: "Class info",
+            items: [
+              { id: "calendar", label: "Class calendar", href: "calendar.html",  built: true }
             ]
           },
           {
             label: "Policies",
             items: [
-              { id: "late",       label: "Late work", href: "late-work.html", built: true }
-            ]
-          }
-        ]
-      },
-
-
-      /* ---- Unbuilt pages are NOT listed here --------------------------
-         Removed 2026-08-08 at Sarah's request: pages that don't exist yet
-         come out of the site map entirely rather than sitting as
-         `built: false`. Some may be written later, some may not.
-
-         `built: false` renders the label as plain text in all four navs —
-         honest, but it still advertises pages students can't open, and a
-         sidebar of mostly-dead labels is worse than a short one.
-
-         So: add an entry when the page exists, not before. What came out —
-         Start here: "What we're doing here", "How class runs", "Books to buy".
-         Reading the course (whole group): three-ways, close, response,
-         historicism. Policies: "Attendance & freewrites", "Generative AI".
-         Areas: Assignments, Reference.
-
-         The footer's "Learn more." AI-policy link is null-guarded
-         (footer.js findItem), so removing the `ai` item just ends that
-         sentence — no dead link.
-         ---------------------------------------------------------------- */
-      /* ---- Readings: deliberately NOT in the nav ----------------------
-         readings.html still exists and still works at its own URL. It was
-         pulled from navigation on 2026-08-07, not deleted: the reading list
-         now lives in Canvas, and the page is kept as a source of per-text
-         access links (library links, which copy is posted) for building the
-         Canvas reading pages.
-
-         This is NOT an oversight — do not add it back. `built: false` would
-         be wrong too: that renders the label as plain text, which still shows
-         students an area that isn't theirs. The entry has to be absent.
-         `area` is null-guarded in nav.js (line ~93), so readings.html renders
-         without a sidebar rather than erroring.
-         ---------------------------------------------------------------- */
-
-
-      {
-        id: "calendar",
-        label: "Calendar",
-        href: "calendar.html",
-        built: true,
-        sidebarLabel: "Within Calendar",
-        groups: [
-          {
-            label: "Calendar",
-            items: [
-              { id: "calendar", label: "Class calendar", href: "calendar.html", built: true }
+              { id: "late",     label: "Late work",      href: "late-work.html", built: true }
             ]
           }
         ]
       }
 
+      /* ---- Readings: deliberately NOT in the nav ----------------------
+         readings.html still exists at its own URL and is kept as a source of
+         per-text access links for building the Canvas reading pages. The
+         reading list itself lives in Canvas. Not an oversight; do not add it
+         back, and don't use `built: false` either -- that renders the label as
+         plain text, which still advertises a page students shouldn't visit.
+         ---------------------------------------------------------------- */
     ]
   };
 })();

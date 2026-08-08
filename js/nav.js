@@ -197,16 +197,23 @@
   blist.setAttribute("role", "list");   /* same reason as the sidebar lists —
                                            this one is the whole navigation on
                                            a phone, so losing it costs most */
-  SITE.areas.forEach(function (a) {
-    var li = el("li");
-    var n = destination(a, "bb-item", a.id === here);
-    var ico = el("span", "bb-ico");
-    ico.innerHTML = svg(iconFor(a.id, a.label));
-    n.appendChild(ico);
-    n.appendChild(el("span", "bb-label", a.label));
-    li.appendChild(n);
-    blist.appendChild(li);
-  });
+  /* With a single area (see site-nav.js) this list would be one item pointing at
+     the page you are already reasonably close to, so it is skipped -- the drawer
+     holds the whole site now. The bar itself stays because it carries the drawer
+     opener on phones. If areas are ever split up again, this comes back on its
+     own. */
+  if (SITE.areas.length > 1) {
+    SITE.areas.forEach(function (a) {
+      var li = el("li");
+      var n = destination(a, "bb-item", a.id === here);
+      var ico = el("span", "bb-ico");
+      ico.innerHTML = svg(iconFor(a.id, a.label));
+      n.appendChild(ico);
+      n.appendChild(el("span", "bb-label", a.label));
+      li.appendChild(n);
+      blist.appendChild(li);
+    });
+  }
   bar.appendChild(blist);
   document.body.appendChild(bar);
 

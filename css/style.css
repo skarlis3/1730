@@ -847,3 +847,11 @@ h2 {
   /* No drawer on desktop, so no opener. */
   .bb-menu { display: none; }
 }
+
+/* The question that used to be the page's h1. It moved into the pull quote on
+   2026-08-08 so the h1 could name the course. Set larger than the line under
+   it so the quote reads question-then-answer rather than as two equal lines. */
+.pull .pull-lead {
+  font-weight: 700; margin: 0 0 .35em;
+  color: var(--ink);
+}
