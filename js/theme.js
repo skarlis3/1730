@@ -20,9 +20,17 @@
   }
   function label() {
     if (!btn) return;
+    /* The visible text names the CURRENT theme, so the control is legible as a
+       theme control at a glance -- "Dark" on its own read as an unlabelled
+       something (Sarah, 8 Aug: "isn't clear for what it is").
+
+       The accessible name starts with that same visible text, which WCAG 2.5.3
+       (Label in Name) requires, and then adds what pressing it does -- state
+       alone would leave a screen reader user guessing. */
+    var now  = currentlyDark() ? "Dark" : "Light";
     var next = currentlyDark() ? "light" : "dark";
-    btn.textContent = currentlyDark() ? "Light" : "Dark";
-    btn.setAttribute("aria-label", "Switch to " + next + " theme");
+    btn.textContent = "Theme: " + now;
+    btn.setAttribute("aria-label", "Theme: " + now + ". Switch to " + next + " theme.");
   }
 
   if (btn) {

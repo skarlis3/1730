@@ -95,12 +95,11 @@
         built: true,
         sidebarLabel: "This site",
         groups: [
-          {
-            label: "Start here",
-            items: [
-              { id: "overview", label: "Overview",       href: "index.html",     built: true }
-            ]
-          },
+          /* No "Start here / Overview" group: the Home link sits above these
+             groups on every page and goes to the same place, so the group was
+             one heading over one item duplicating the link right above it.
+             Removed 2026-08-08. index.html still marks Home as current via
+             data-page="overview" (see nav.js). */
           {
             label: "Class info",
             items: [

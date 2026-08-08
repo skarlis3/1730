@@ -102,7 +102,8 @@
     /* Deliberately NOT the old course card. Sarah, 8 Aug: it carried too much
        (tile, full course name, "Fall 2026", stat chips) and the term meant
        editing it every semester. */
-    var toggle = el("button", "theme-toggle", "Dark");
+    var toggle = el("button", "theme-toggle", "Theme");   /* theme.js replaces this
+       with "Theme: Light" or "Theme: Dark" as soon as it runs */
     toggle.type = "button";
     sidenav.appendChild(toggle);
 
