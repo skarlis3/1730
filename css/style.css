@@ -878,3 +878,29 @@ h2 {
   font-size: .32em; font-weight: 600; letter-spacing: -.01em;
   color: var(--ink-2); margin-bottom: .1em;
 }
+
+@media (max-width: 880px) {
+  /* The drawer opener, when it is the ONLY thing in the bottom bar.
+
+     The bar lays its items out as an equal-width grid capped at 620px, so a
+     single item means one small muted icon floating in a cell as wide as the
+     phone. Sarah: "the hamburger just kind of isn't noticeable." It isn't --
+     and on this site it is the only route to every page except the one you are
+     on, so being missable is the worst possible property for it.
+
+     So it stops pretending to be one tab among several and reads as a button:
+     pill, accent colour, icon and label side by side at a legible size. */
+  .bb-menu { display: grid; place-items: center; }
+  .bb-menu .burger {
+    flex-direction: row; align-items: center; gap: 10px;
+    width: auto; padding: 12px 24px; min-height: 48px;
+    background: var(--wash); color: var(--accent);
+    border-radius: 99px; font-weight: 700;
+  }
+  .bb-menu .burger .burger-text { font-size: 15px; letter-spacing: 0; }
+  .bb-menu .burger svg { width: 20px; height: 20px; }
+  .bb-menu .burger:hover,
+  .bb-menu .burger[aria-expanded="true"] {
+    color: var(--accent); background: var(--surface-2);
+  }
+}
