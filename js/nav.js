@@ -66,44 +66,63 @@
     return n;
   }
 
-  /* ---------- 1. TOP BAR ------------------------------------------- */
-  if (topbar) {
-    topbar.setAttribute("role", "banner");
+  /* ---------- 1. TOP BAR — REMOVED 2026-08-08 -----------------------
+     Sarah's call: the top bar wasn't clear. The site name and the
+     dark/light control moved into the sidebar, where the course card used
+     to be, and the top-level area links are gone from desktop entirely —
+     the sidebar's Home link is the route out of a section.
 
-    var mark = el("a", "wordmark");
-    mark.href = SITE.areas[0].href || "index.html";
-    mark.appendChild(el("span", "wordmark-code", SITE.course.code));
-    topbar.appendChild(mark);
+     Two knock-on moves this forced, both handled below:
+       · the burger that opens the phone drawer used to live here, so it
+         moved into the bottom bar (section 3);
+       · --top-offset is now 0 in style.css, since nothing is fixed to the
+         top of the viewport any more.
 
-    var topnav = el("nav", "topnav");
-    topnav.setAttribute("aria-label", "Main areas");
-    SITE.areas.forEach(function (a) {
-      var n = destination(a, "", a.id === here);
-      n.textContent = a.label;
-      topnav.appendChild(n);
-    });
-    topbar.appendChild(topnav);
-
-    var toggle = el("button", "theme-toggle", "Dark");
-    toggle.type = "button";
-    topbar.appendChild(toggle);
+     Any leftover <header class="topbar"> in a page is emptied out rather
+     than trusted, so a stale page can't render half a dead bar. */
+  if (topbar && topbar.parentNode) {
+    topbar.parentNode.removeChild(topbar);
   }
 
   /* ---------- 2. SIDEBAR ------------------------------------------- */
-  if (sidenav && area) {
-    sidenav.setAttribute("aria-label", area.sidebarLabel || ("Within " + area.label));
+  /* The masthead — name, theme control, Home — renders whenever there is a
+     sidebar at all, NOT only when the page matches an area. readings.html is
+     deliberately outside the site map (see site-nav.js) and would otherwise
+     lose the site name and the dark/light button along with its groups. */
+  if (sidenav) {
+    sidenav.setAttribute("aria-label",
+      area ? (area.sidebarLabel || ("Within " + area.label)) : "Site");
 
-    var card = el("div", "sidecard");
-    var tile = el("div", "sidecard-tile");
-    tile.setAttribute("aria-hidden", "true");
-    tile.appendChild(el("span", "", SITE.course.tile));
-    card.appendChild(tile);
-    card.appendChild(el("p", "sidecard-title", SITE.course.name));
-    card.appendChild(el("p", "sidecard-meta", SITE.course.meta));
-    var stats = el("p", "sidecard-stats");
-    SITE.course.stats.forEach(function (s) { stats.appendChild(el("span", "", s)); });
-    card.appendChild(stats);
-    sidenav.appendChild(card);
+    /* Same classes as the old top-bar wordmark, so it looks identical. */
+    var mark = el("a", "wordmark");
+    mark.href = "index.html";
+    mark.appendChild(el("span", "wordmark-code", SITE.course.code));
+    sidenav.appendChild(mark);
+
+    /* Deliberately NOT the old course card. Sarah, 8 Aug: it carried too much
+       (tile, full course name, "Fall 2026", stat chips) and the term meant
+       editing it every semester. */
+    var toggle = el("button", "theme-toggle", "Dark");
+    toggle.type = "button";
+    sidenav.appendChild(toggle);
+
+    /* A route back to the front page from inside any area.
+
+       The sidebar only ever draws the CURRENT area's groups, so from inside
+       Policies there is no way to reach another area except the top bar --
+       which Sarah found non-obvious, and which is easy to miss once you are
+       deep in a section. This sits directly above the section groups so it
+       is the first thing under the course card.
+
+       Same element serves the phone drawer (see section 4), so this appears
+       there too without a second copy. */
+    var home = el("a", "sidenav-home", "Home");
+    home.href = "index.html";
+    if (herePage === "overview") home.setAttribute("aria-current", "page");
+    sidenav.appendChild(home);
+  }
+
+  if (sidenav && area) {
 
     area.groups.forEach(function (group, i) {
       /* The group label stays a <p>, not a heading, on purpose. The
@@ -207,7 +226,14 @@
     '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">' +
     '<path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>' +
     '<span class="burger-text">Menu</span>';
-  topbar.insertBefore(burger, topbar.firstChild);
+  /* The burger used to sit in the top bar. With that gone it lives in the
+     phone bottom bar as a final item, so the drawer -- which is the ONLY route
+     to the pages within an area on a phone -- stays reachable. Without this the
+     drawer would have no opener at all. */
+  var bli = el("li");
+  bli.className = "bb-menu";
+  bli.appendChild(burger);
+  blist.appendChild(bli);
 
   sidenav.id = sidenav.id || "section-nav";
 

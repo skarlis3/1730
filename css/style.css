@@ -56,7 +56,10 @@
      rather than hard-coded because the bar's height moves with the
      display font, and it wraps at narrow widths without JS. The 56px
      fallback is close enough that a no-JS page still looks right. */
-  --top-offset: 56px;
+  /* 0 since the top bar was removed 2026-08-08. Kept as a token because the
+     sidebar's sticky offset and the scroll-margin rule both read it, and a
+     no-JS page still renders its <header class="topbar"> fallback. */
+  --top-offset: 0px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -784,4 +787,63 @@ h2 {
   .policy-grid .pg-h { display: none; }
   .policy-grid .pg-what { padding-bottom: 2px; }
   .policy-grid .pg-rule { padding-top: 2px; }
+}
+
+/* ---------------------------------------------------------------
+   .sidenav-home — route back to the front page from inside any area.
+
+   The sidebar shows only the current area's pages, so this is the way
+   out of a section. Sits between the course card and the section
+   groups. Separated by space and a surface shift, never a rule.
+   --------------------------------------------------------------- */
+.sidenav-home {
+  display: block; margin: 0 0 18px; padding: 9px 14px;
+  background: var(--wash); color: var(--accent);
+  border-radius: 10px; text-decoration: none;
+  font-size: .92rem; font-weight: 600;
+  transition: background .15s ease;
+}
+.sidenav-home:hover { background: var(--surface-2); }
+.sidenav-home:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.sidenav-home[aria-current="page"] { color: var(--ink); }
+
+/* ---------------------------------------------------------------
+   Sidebar masthead — replaced the course card on 2026-08-08.
+
+   Was: a 74px gradient tile, the full course name, "Macomb CC · Fall
+   2026 · Mon evenings", and two stat chips. Sarah's call: too much
+   information, and naming the term meant editing it every semester.
+
+   Now: the site name exactly as the top bar rendered it (same
+   .wordmark / .wordmark-code, so the gradient treatment is identical),
+   the dark/light control under it, then Home, then the section.
+   --------------------------------------------------------------- */
+.sidenav > .wordmark {
+  display: block; margin: 0 0 12px;
+  font-size: 25px;            /* larger than the 19px top-bar version */
+}
+.sidenav > .wordmark .wordmark-code { font-size: inherit; }
+.sidenav > .theme-toggle {
+  display: block; width: 100%; text-align: left;
+  margin: 0 0 18px;
+}
+
+/* The burger moved out of the top bar into the phone bottom bar, where it
+   is the only opener for the drawer. It has to read as one of the bar's
+   items rather than a stray button. */
+.bb-menu .burger {
+  appearance: none; border: 0; background: none; cursor: pointer;
+  font: inherit; width: 100%;
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 7px 4px 5px; min-height: 48px; color: var(--ink-2);
+  border-radius: 10px;
+}
+.bb-menu .burger:hover { color: var(--ink); }
+.bb-menu .burger:focus-visible { outline: 3px solid var(--accent); outline-offset: -3px; }
+.bb-menu .burger-text { font-size: 10.5px; font-weight: 600; letter-spacing: .01em; }
+.bb-menu .burger svg { width: 22px; height: 22px; }
+
+@media (min-width: 881px) {
+  /* No drawer on desktop, so no opener. */
+  .bb-menu { display: none; }
 }
