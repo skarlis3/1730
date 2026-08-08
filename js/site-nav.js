@@ -83,32 +83,38 @@
           {
             label: "Start here",
             items: [
-              { id: "overview",   label: "Overview",              href: "index.html", built: true },
-              { id: "what",       label: "What we're doing here", href: "",           built: false },
-              { id: "how",        label: "How class runs",        href: "",           built: false },
-              { id: "books",      label: "Books to buy",          href: "",           built: false }
-            ]
-          },
-          {
-            label: "Reading the course",
-            items: [
-              { id: "three-ways", label: "Three ways to read", href: "", built: false },
-              { id: "close",      label: "Close reading",     href: "", built: false },
-              { id: "response",   label: "Reader response",   href: "", built: false },
-              { id: "historicism",label: "New historicism",   href: "", built: false }
+              { id: "overview",   label: "Overview",  href: "index.html", built: true }
             ]
           },
           {
             label: "Policies",
             items: [
-              { id: "attendance", label: "Attendance & freewrites", href: "", built: false },
-              { id: "late",       label: "Late work",               href: "late-work.html", built: true },
-              { id: "ai",         label: "Generative AI",           href: "", built: false }
+              { id: "late",       label: "Late work", href: "late-work.html", built: true }
             ]
           }
         ]
       },
 
+
+      /* ---- Unbuilt pages are NOT listed here --------------------------
+         Removed 2026-08-08 at Sarah's request: pages that don't exist yet
+         come out of the site map entirely rather than sitting as
+         `built: false`. Some may be written later, some may not.
+
+         `built: false` renders the label as plain text in all four navs —
+         honest, but it still advertises pages students can't open, and a
+         sidebar of mostly-dead labels is worse than a short one.
+
+         So: add an entry when the page exists, not before. What came out —
+         Start here: "What we're doing here", "How class runs", "Books to buy".
+         Reading the course (whole group): three-ways, close, response,
+         historicism. Policies: "Attendance & freewrites", "Generative AI".
+         Areas: Assignments, Reference.
+
+         The footer's "Learn more." AI-policy link is null-guarded
+         (footer.js findItem), so removing the `ai` item just ends that
+         sentence — no dead link.
+         ---------------------------------------------------------------- */
       /* ---- Readings: deliberately NOT in the nav ----------------------
          readings.html still exists and still works at its own URL. It was
          pulled from navigation on 2026-08-07, not deleted: the reading list
@@ -123,14 +129,6 @@
          without a sidebar rather than erroring.
          ---------------------------------------------------------------- */
 
-      {
-        id: "assignments",
-        label: "Assignments",
-        href: "",
-        built: false,
-        sidebarLabel: "Within Assignments",
-        groups: []
-      },
 
       {
         id: "calendar",
@@ -146,16 +144,8 @@
             ]
           }
         ]
-      },
-
-      {
-        id: "reference",
-        label: "Reference",
-        href: "",
-        built: false,
-        sidebarLabel: "Within Reference",
-        groups: []
       }
+
     ]
   };
 })();
