@@ -95,7 +95,7 @@
 
     /* Same classes as the old top-bar wordmark, so it looks identical. */
     var mark = el("a", "wordmark");
-    mark.href = "index.html";
+    mark.href = "/index.html";   /* root-relative: pages exist at more than one depth */
     mark.appendChild(el("span", "wordmark-code", SITE.course.code));
     sidenav.appendChild(mark);
 
@@ -126,7 +126,7 @@
        Same element serves the phone drawer (see section 4), so this appears
        there too without a second copy. */
     var home = el("a", "sidenav-home", "Home");
-    home.href = "index.html";
+    home.href = "/index.html";
     if (herePage === "overview") home.setAttribute("aria-current", "page");
     sidenav.appendChild(home);
   }

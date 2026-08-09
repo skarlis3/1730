@@ -6,6 +6,14 @@
    sidebar, the phone's bottom bar, and the phone drawer. There is no
    second copy anywhere and no nav markup in any .html file.
 
+   ---- Paths are ROOT-RELATIVE ---------------------------------------
+   Every href starts with "/". This is not a style choice: pages live at
+   more than one depth now (assignments/ has its own folder), and a bare
+   "index.html" resolves against the CURRENT directory, so from
+   /assignments/freewrites.html it would point at
+   /assignments/index.html and 404. Keep the leading slash on everything.
+   The site is served from the domain root, so "/" is the site root.
+
    ---- To add a page -------------------------------------------------
    Find its group below and flip `built: false` to `built: true`, then
    set `href` to the real filename. That is the whole job.
@@ -91,7 +99,7 @@
       {
         id: "course",
         label: "Course",
-        href: "index.html",
+        href: "/index.html",
         built: true,
         sidebarLabel: "This site",
         groups: [
@@ -101,16 +109,22 @@
              Removed 2026-08-08. index.html still marks Home as current via
              data-page="overview" (see nav.js). */
           {
+            label: "Assignments",
+            items: [
+              { id: "freewrites", label: "In-class freewrites", href: "/assignments/freewrites.html", built: true }
+            ]
+          },
+          {
             label: "Class info",
             items: [
-              { id: "calendar", label: "Class calendar", href: "calendar.html",  built: true }
+              { id: "calendar", label: "Class calendar", href: "/calendar.html",  built: true }
             ]
           },
           {
             label: "Policies",
             items: [
-              { id: "late",      label: "Late work",              href: "late-work.html",         built: true },
-              { id: "integrity", label: "Academic integrity & AI", href: "academic-integrity.html", built: true }
+              { id: "late",      label: "Late work",              href: "/late-work.html",         built: true },
+              { id: "integrity", label: "Academic integrity & AI", href: "/academic-integrity.html", built: true }
             ]
           }
         ]
