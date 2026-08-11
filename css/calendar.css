@@ -326,8 +326,22 @@
 
 .cal-grp-due li, .cal-grp-exam li { font-weight: 600; }
 .cal-grp-exam li { color: var(--accent-2); }
+
+/* Due is the line a student can least afford to skim past, so it gets a
+   tinted panel of its own instead of being one more label in the stack.
+   Deliberately kept soft: a filled badge or a hard-ruled box would read as
+   something to click, and on this site nothing non-interactive may look
+   interactive. Measured on --wash: label and date 7.30:1, item text
+   15.49:1 light / 14.22:1 dark. All AAA. */
+.cal-grp-due {
+  background: var(--wash); border-radius: 9px;
+  padding: 9px 13px 10px; margin-top: 12px;
+}
+.cal-grp-due .cal-grp-lbl { color: var(--accent); font-size: 10.5px; }
+.cal-grp-due li { color: var(--ink); font-weight: 700; font-size: 15.5px; }
 .cal-due-when {
-  font-family: var(--f-mono); font-size: 11.5px; font-weight: 700; color: var(--ink-2);
+  font-family: var(--f-mono); font-size: 12px; font-weight: 700; color: var(--accent);
+  white-space: nowrap;
 }
 
 .cal-sched-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
