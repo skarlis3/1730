@@ -252,3 +252,110 @@
   .cal-up-time { min-width: 100%; }
   .cal-up-item { flex-wrap: wrap; gap: 2px; }
 }
+
+/* ---- schedule view -----------------------------------------------
+   A syllabus-style list: one card per week of the term, week number and
+   date on the left, what's happening on the right. Built by
+   renderSchedule() in js/calendar.js from the same fetched events the
+   other two views use.
+
+   The week rows are deliberately NOT interactive. The month and upcoming
+   views open a dialog on click because a chip is too small to hold a
+   title; here the whole title is already on the page, so a click target
+   would promise detail that doesn't exist. Site rule: nothing
+   non-interactive may look interactive. */
+
+.cal-sched-note {
+  background: var(--wash); border-radius: 11px; padding: 12px 15px;
+  margin: 0 0 20px; font-size: 14.5px; color: var(--ink);
+}
+
+.cal-sched {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-direction: column; gap: 11px;
+}
+
+.cal-wk {
+  background: var(--surface); border-radius: var(--radius); box-shadow: var(--lift);
+  padding: 15px 19px 16px 22px; position: relative; overflow: hidden;
+  display: grid; grid-template-columns: 5.5rem 1fr; gap: 4px 20px;
+}
+.cal-wk::before {
+  content: ""; position: absolute; inset: 0 auto 0 0; width: 4px; background: var(--grad);
+}
+.cal-wk-num {
+  grid-row: 1 / span 2;
+  font-family: var(--f-display); font-weight: 700; font-size: 15px;
+  color: var(--ink); line-height: 1.25;
+}
+.cal-wk-lbl {
+  display: block; font-family: var(--f-body); font-size: 10px; letter-spacing: .13em;
+  text-transform: uppercase; font-weight: 600; color: var(--ink-2); margin: 0 0 1px;
+}
+.cal-wk-date { font-family: var(--f-mono); font-size: 12.5px; color: var(--ink-2); margin-top: 3px; }
+.cal-wk-body { min-width: 0; }
+
+/* past weeks lose the gradient edge and the lift; the text stays at full
+   contrast, because a student catching up still has to read it */
+.cal-wk.is-past { background: var(--surface-2); box-shadow: none; }
+.cal-wk.is-past::before { background: var(--rule); }
+.cal-wk.is-past .cal-wk-num { color: var(--ink-2); }
+.cal-wk.is-now { outline: 2px solid var(--accent); outline-offset: 0; }
+.cal-wk-now {
+  font-size: 10px; letter-spacing: .13em; text-transform: uppercase;
+  font-weight: 700; color: var(--accent); margin: 0 0 6px;
+}
+
+.cal-grp { margin: 0 0 11px; }
+.cal-grp:last-child { margin-bottom: 0; }
+.cal-grp-lbl {
+  font-size: 10px; letter-spacing: .13em; text-transform: uppercase;
+  font-weight: 600; color: var(--ink-2); margin: 0 0 4px;
+}
+.cal-grp ul { list-style: none; margin: 0; padding: 0; }
+.cal-grp li { margin: 0 0 3px; font-size: 15px; }
+.cal-grp li:last-child { margin-bottom: 0; }
+
+.cal-grp-readings li { padding-left: 15px; position: relative; }
+.cal-grp-readings li::before {
+  content: ""; position: absolute; left: 2px; top: .62em; width: 5px; height: 5px;
+  border-radius: 50%; background: var(--accent);
+}
+.cal-grp-readings li.is-none { padding-left: 0; color: var(--ink-2); font-style: italic; }
+.cal-grp-readings li.is-tbd { color: var(--ink-2); }
+
+.cal-grp-due li, .cal-grp-exam li { font-weight: 600; }
+.cal-grp-exam li { color: var(--accent-2); }
+.cal-due-when {
+  font-family: var(--f-mono); font-size: 11.5px; font-weight: 700; color: var(--ink-2);
+}
+
+.cal-sched-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+.cal-sched-chip {
+  font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700;
+  padding: 3px 8px; border-radius: 6px; background: var(--wash); color: var(--accent-2);
+}
+
+/* reminders sit at the foot of the week they point at, with no date --
+   the date is only there so Sarah gets the nudge out the day after
+   class; what a student needs is that one exists. */
+.cal-rem { margin: 11px 0 0; padding: 9px 0 0; border-top: 1px solid var(--rule); }
+.cal-rem ul { list-style: none; margin: 0; padding: 0; }
+.cal-rem li { font-size: 13px; font-style: italic; color: var(--ink-2); margin: 0 0 2px; }
+.cal-rem li:last-child { margin-bottom: 0; }
+
+/* a week the college is closed: no number, no card, an inset tinted band */
+.cal-brk {
+  background: var(--wash); border-radius: 11px; margin: 1px 0;
+  padding: 11px 18px 12px 22px;
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px;
+}
+.cal-brk-date { font-family: var(--f-mono); font-size: 12px; color: var(--ink-2); }
+.cal-brk-txt { font-size: 15px; font-weight: 600; color: var(--accent-2); }
+
+@media (max-width: 620px) {
+  .cal-wk { grid-template-columns: 1fr; gap: 2px; }
+  .cal-wk-num { grid-row: auto; display: flex; align-items: baseline; gap: 9px; }
+  .cal-wk-lbl { margin: 0; }
+  .cal-wk-date { margin: 0 0 8px; }
+}

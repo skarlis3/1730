@@ -1,12 +1,15 @@
 /* calendar.js — pulls the course Google Calendar into the page.
    ===================================================================
-   Two views: Month, and Upcoming (the next few weeks). Students who
-   want the real thing get the "Open in Google Calendar" link; nobody
-   has to leave the site to see what's due.
+   Students who want the real thing get the "Open in Google Calendar"
+   link; nobody has to leave the site to see what's due.
+
+   Three views: Schedule (the default — a syllabus-style week list),
+   Month, and Upcoming.
 
    ---- WHAT TO EDIT WHEN A NEW SEMESTER STARTS ----------------------
-   CALENDAR_ID below. Nothing else. Full setup walkthrough — creating
-   the calendar, making it public, the API key restrictions — is in
+   CALENDAR_ID, TERM_START and TERM_END below. Nothing else. Full setup
+   walkthrough — creating the calendar, making it public, the API key
+   restrictions — is in
    work-with-claude-code/classes/google-calendar-setup.html
 
    ---- WHY THE KEY IS SITTING HERE IN PLAIN SIGHT -------------------
@@ -32,6 +35,23 @@
   var TIMEZONE = "America/Detroit";
   var UPCOMING_DAYS = 21;         /* how far "Upcoming" looks ahead */
   var CHIPS_PER_DAY = 2;          /* before a day collapses to "+N more" */
+
+  /* The schedule view's skeleton. Every meeting day between these two
+     dates gets a row, whether or not anything is on the calendar for it —
+     so a week whose reading isn't chosen yet shows up as an empty week
+     rather than silently vanishing. Both are the DAY THE CLASS MEETS:
+     the first meeting of the term and the last. */
+  var TERM_START = "2026-08-17";
+  var TERM_END   = "2026-12-07";
+  var MEETS_ON   = 1;             /* 0 Sun … 6 Sat. This section meets Mondays. */
+
+  /* Weeks with no class. Normally left empty: any event whose title says
+     "no class" (or "college closed") is detected on its own, which is how
+     Labor Day is caught. Add a meeting date here — "2026-09-07" — only if
+     a closure is worded so that the sniff misses it. Getting this wrong
+     doesn't error, it silently shifts every later week number by one, so
+     the meeting count is printed under the list as a check. */
+  var BREAKS = [];
 
   /* ---------------------------------------------------------------- */
 
@@ -75,6 +95,21 @@
   function daysBetween(d) {
     return Math.round((midnight(d) - midnight(new Date())) / 86400000);
   }
+  /* Same care as startOf(): build from the parts so "2026-08-17" is local
+     midnight and not UTC midnight the evening before. */
+  function isoDate(s) {
+    var p = s.split("-").map(Number);
+    return new Date(p[0], p[1] - 1, p[2]);
+  }
+  function plusDays(d, n) { var c = new Date(d); c.setDate(c.getDate() + n); return c; }
+  function dateKey(d) {
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") +
+           "-" + String(d.getDate()).padStart(2, "0");
+  }
+  function shortDate(d) {
+    return DAYS[d.getDay()].slice(0, 3) + " " + MONTHS[d.getMonth()].slice(0, 3) +
+           " " + d.getDate();
+  }
   function timeOf(ev) {
     /* All-day events show NO label at all. Sarah, 8 Aug 2026: this calendar is a
        course schedule -- what we are doing that day -- and nothing on it has a
@@ -96,6 +131,15 @@
   function load() {
     var min = new Date(); min.setMonth(min.getMonth() - 4);
     var max = new Date(); max.setMonth(max.getMonth() + 8);
+
+    /* Widen to cover the whole term if today's window doesn't. Without
+       this, opening the page in late December clips the August weeks off
+       the schedule view. A week either side catches the Sunday deadlines
+       that belong to the first meeting. */
+    var termFrom = plusDays(isoDate(TERM_START), -8);
+    var termTo   = plusDays(isoDate(TERM_END), 8);
+    if (termFrom < min) min = termFrom;
+    if (termTo   > max) max = termTo;
 
     var url = new URL("https://www.googleapis.com/calendar/v3/calendars/" +
                       encodeURIComponent(CALENDAR_ID) + "/events");
@@ -269,6 +313,222 @@
     host.appendChild(ul);
   }
 
+  /* ---- schedule view ----------------------------------------------
+     A syllabus-style list of the term, one row per meeting week.
+
+     THE ORDER MATTERS. The skeleton is built first, from TERM_START and
+     TERM_END, and events are dropped into it afterwards. Doing it the
+     other way round — deriving the weeks from whatever events exist —
+     means a week with nothing scheduled yet disappears, which is exactly
+     the week a student most needs to see is coming.
+
+     A week runs Tuesday → Monday, ending on the meeting. That is what
+     puts a Sunday deadline in the week it's due for rather than the week
+     before, and it matches the Canvas convention of setting the due date
+     the night before class (see classes/CLAUDE.md).
+
+     Week numbers count MEETINGS. A closure doesn't consume a number: it
+     gets an unnumbered band, and the next meeting carries on the count.
+     That's the numbering Sarah's planning docs and the Canvas readings
+     page already use — Klune at 4, midterm at 6, exam at 13. */
+
+  /* Which bucket a title belongs in. First match wins, so the order of
+     these tests is the specification. All of it works off the title,
+     because that's the only field the calendar is allowed to carry —
+     descriptions are visible to students, so nothing is written there. */
+  function classifyEvent(title) {
+    var low = title.toLowerCase();
+    if (/no class|college closed|classes do not meet/.test(low)) return "break";
+    if (/^reminder\s*:/i.test(title))                            return "reminder";
+    if (/^readings?\s*(due)?\s*:/i.test(title))                  return "reading";
+    if (/^no readings/.test(low))                                return "noreading";
+    if (/midterm|final exam/.test(low))                          return "exam";
+    if (/^due\s*:/i.test(title) || /\bdue$/.test(low.trim()))    return "due";
+    if (/^attendance mandatory$/.test(low.trim()))               return "attendance";
+    return "inclass";
+  }
+
+  /* Drop the part of the title that the group label already says. */
+  function stripLabel(title) {
+    return title
+      .replace(/^readings?\s*(due)?\s*:\s*/i, "")
+      .replace(/^due\s*:\s*/i, "")
+      .replace(/^reminder\s*:\s*/i, "")
+      .replace(/\s*[;,]?\s*attendance mandatory!?\s*$/i, "")
+      .replace(/\s+due$/i, "")
+      .trim();
+  }
+
+  function buildWeeks() {
+    var byDate = {};
+    events.forEach(function (ev) {
+      var k = dateKey(startOf(ev));
+      (byDate[k] = byDate[k] || []).push(ev.summary || "(untitled)");
+    });
+
+    var weeks = [], count = 0;
+    var meeting = isoDate(TERM_START), last = isoDate(TERM_END);
+
+    while (meeting <= last) {
+      var w = {
+        day: new Date(meeting), num: null, breakLabel: null,
+        readings: [], due: [], exams: [], inclass: [], reminders: [],
+        attendance: false, noReadings: false
+      };
+
+      for (var back = 6; back >= 0; back--) {
+        var day = plusDays(meeting, -back);
+        (byDate[dateKey(day)] || []).forEach(function (title) {
+          var text = stripLabel(title);
+          switch (classifyEvent(title)) {
+            case "break":      w.breakLabel = text; break;
+            case "reminder":   w.reminders.push(text); break;
+            case "reading":    w.readings.push(text); break;
+            case "noreading":  w.noReadings = true; break;
+            case "exam":       w.exams.push(text);
+                               if (/attendance mandatory/i.test(title)) w.attendance = true;
+                               break;
+            case "due":        w.due.push({ day: day, text: text }); break;
+            case "attendance": w.attendance = true; break;
+            default:           w.inclass.push(text);
+          }
+        });
+      }
+
+      if (BREAKS.indexOf(dateKey(meeting)) !== -1) w.breakLabel = w.breakLabel || "No class";
+      if (!w.breakLabel) w.num = ++count;
+      weeks.push(w);
+      meeting = plusDays(meeting, 7);
+    }
+
+    /* A reminder goes out the day after class, about the NEXT session's
+       reading, so it belongs with that session — not on its own date,
+       which for the reminder sent before a closure would strand it in the
+       break. Move any reminder landing in an unnumbered week forward to
+       the next week that meets. */
+    weeks.forEach(function (w, i) {
+      if (w.num !== null || !w.reminders.length) return;
+      for (var j = i + 1; j < weeks.length; j++) {
+        if (weeks[j].num !== null) {
+          weeks[j].reminders = w.reminders.concat(weeks[j].reminders);
+          w.reminders = [];
+          return;
+        }
+      }
+    });
+
+    return { weeks: weeks, meetings: count };
+  }
+
+  function schedGroup(cls, label, items, build) {
+    var g = el("div", "cal-grp " + cls);
+    g.appendChild(el("p", "cal-grp-lbl", label));
+    var ul = el("ul");
+    ul.setAttribute("role", "list");
+    items.forEach(function (it) { ul.appendChild(build(it)); });
+    g.appendChild(ul);
+    return g;
+  }
+
+  function weekRow(w, today) {
+    var li = el("li");
+
+    if (w.breakLabel) {
+      var band = el("div", "cal-brk");
+      band.appendChild(el("span", "cal-brk-date", shortDate(w.day)));
+      band.appendChild(el("span", "cal-brk-txt", w.breakLabel));
+      li.appendChild(band);
+      return li;
+    }
+
+    li.className = "cal-wk";
+    var isNow = sameDay(w.day, today);
+    if (isNow) li.classList.add("is-now");
+    else if (midnight(w.day) < midnight(today)) li.classList.add("is-past");
+
+    var num = el("div", "cal-wk-num");
+    num.appendChild(el("span", "cal-wk-lbl", "Week"));
+    num.appendChild(document.createTextNode(String(w.num)));
+    num.appendChild(el("div", "cal-wk-date", shortDate(w.day)));
+    li.appendChild(num);
+
+    var body = el("div", "cal-wk-body");
+
+    if (isNow) body.appendChild(el("p", "cal-wk-now", "This week"));
+
+    if (w.attendance) {
+      var chips = el("div", "cal-sched-chips");
+      chips.appendChild(el("span", "cal-sched-chip", "Attendance mandatory"));
+      body.appendChild(chips);
+    }
+
+    if (w.readings.length) {
+      body.appendChild(schedGroup("cal-grp-readings", "Read before class", w.readings,
+        function (text) {
+          /* "Reading: TBD" strips down to a bare "TBD", which reads as an
+             error next to real titles. */
+          var bare = /^TBD$/i.test(text);
+          var item = el("li", /\bTBD\b/.test(text) ? "is-tbd" : null,
+                        bare ? "Reading TBD" : text);
+          return item;
+        }));
+    } else if (w.noReadings) {
+      var none = el("div", "cal-grp cal-grp-readings");
+      none.appendChild(el("p", "cal-grp-lbl", "Read before class"));
+      var nl = el("ul");
+      nl.setAttribute("role", "list");
+      nl.appendChild(el("li", "is-none", "None this week"));
+      none.appendChild(nl);
+      body.appendChild(none);
+    }
+
+    if (w.exams.length) {
+      body.appendChild(schedGroup("cal-grp-exam", "In class", w.exams,
+        function (text) { return el("li", null, text); }));
+    }
+
+    if (w.due.length) {
+      body.appendChild(schedGroup("cal-grp-due", "Due", w.due, function (it) {
+        var item = el("li");
+        /* Only date-stamp a deadline that isn't the class meeting itself —
+           on the meeting day the week's own date already says it. */
+        if (sameDay(it.day, w.day)) {
+          item.textContent = it.text;
+        } else {
+          item.appendChild(document.createTextNode(it.text + " "));
+          item.appendChild(el("span", "cal-due-when", shortDate(it.day)));
+        }
+        return item;
+      }));
+    }
+
+    if (w.inclass.length) {
+      body.appendChild(schedGroup("cal-grp-inclass",
+        w.exams.length ? "Also in class" : "In class", w.inclass,
+        function (text) { return el("li", null, text); }));
+    }
+
+    if (w.reminders.length) {
+      var rem = el("div", "cal-rem");
+      var rl = el("ul");
+      rl.setAttribute("role", "list");
+      w.reminders.forEach(function (text) { rl.appendChild(el("li", null, text)); });
+      rem.appendChild(rl);
+      body.appendChild(rem);
+    }
+
+    li.appendChild(body);
+    return li;
+  }
+
+  function renderSchedule() {
+    var host = document.getElementById("cal-schedule");
+    host.textContent = "";
+    var today = midnight(new Date());
+    var built = buildWeeks();
+    built.weeks.forEach(function (w) { host.appendChild(weekRow(w, today)); });
+  }
+
   /* ---- dialog -----------------------------------------------------
      Same modal contract as the section drawer in nav.js: focus moves
      in, everything else goes inert, Escape closes, focus returns to
@@ -434,7 +694,8 @@
   load().then(function () {
     status.hidden = true;
     document.getElementById("cal-views").hidden = false;
-    selectTab(tabs[0]);
+    selectTab(tabs[0]);       /* whichever tab is first in the markup */
+    renderSchedule();
     renderMonth();
     renderUpcoming();
   }).catch(function (err) {

@@ -90,14 +90,25 @@
       <div id="cal-views" hidden>
 
         <div class="cal-tabs" role="tablist" aria-label="Calendar views">
-          <button type="button" class="cal-tab is-on" id="tab-month"
-                  role="tab" aria-selected="true" aria-controls="panel-month">Month</button>
+          <button type="button" class="cal-tab is-on" id="tab-schedule"
+                  role="tab" aria-selected="true" aria-controls="panel-schedule">Schedule</button>
+          <button type="button" class="cal-tab" id="tab-month"
+                  role="tab" aria-selected="false" aria-controls="panel-month" tabindex="-1">Month</button>
           <button type="button" class="cal-tab" id="tab-upcoming"
                   role="tab" aria-selected="false" aria-controls="panel-upcoming" tabindex="-1">Upcoming</button>
         </div>
 
+        <div id="panel-schedule" role="tabpanel" tabindex="0"
+             aria-labelledby="tab-schedule">
+          <p class="cal-sched-note">Readings are listed by title. For the readings themselves, and for
+            editions and page ranges, see the readings page in
+            <a href="https://online.macomb.edu" class="inline_disabled" target="_blank"
+               rel="noopener">Canvas</a>.</p>
+          <ol class="cal-sched" id="cal-schedule"></ol>
+        </div>
+
         <div id="panel-month" role="tabpanel" tabindex="0"
-             aria-labelledby="tab-month">
+             aria-labelledby="tab-month" hidden>
           <div class="cal-controls">
             <button type="button" class="cal-nav" id="cal-prev" aria-label="Previous month">←</button>
             <span id="cal-month-label"></span>
