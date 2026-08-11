@@ -141,3 +141,31 @@ Changes to this repo get logged in
 `work-with-claude-code/classes/ENGL-1730/changelog/YYYY-MM-DD.html`, with a
 row added to that folder's `index.html`. The log records *why* something
 changed — the outside cause — not just what the diff shows.
+
+## Calendar page (`calendar.html`, `js/calendar.js`, `css/calendar.css`)
+
+Three tabs, all built from one fetch of the live Google Calendar: **Schedule** (default),
+**Month**, **Upcoming**. All three render on load, so switching never waits on anything.
+
+**Editing for a new semester: `CALENDAR_ID`, `TERM_START`, `TERM_END` at the top of
+`js/calendar.js`. Nothing else.** `TERM_START`/`TERM_END` are the first and last class
+meeting; the Schedule view builds a row for every meeting day between them.
+
+Things that will bite:
+
+- **The default tab is whichever `<button role="tab">` comes first in `calendar.html`,**
+  because `selectTab(tabs[0])` runs after the fetch. Reordering the buttons is the whole
+  mechanism — the `is-on` class and the panels' `hidden` attributes are just the pre-JS
+  state, and the script overrides both. Changing them alone does nothing.
+- **The fetch window is today−4mo to today+8mo, widened to cover the term.** The widening
+  is not decoration: without it, opening the page late in the term starts the window after
+  `TERM_START` and week 1 drops off the Schedule view.
+- **`BREAKS` is a silent-failure backstop.** Closures are normally detected from the event
+  title ("no class" / "college closed"). A differently worded closure is counted as a
+  meeting and shifts every later week number by one without erroring.
+- **Schedule rows are intentionally not clickable.** Month and Upcoming open a dialog
+  because a chip can't hold a full title; on Schedule the title is already visible, so a
+  click target would promise detail that doesn't exist — and per the two design rules
+  above, nothing non-interactive here may look interactive.
+- **Event titles are the only field in play.** The calendar is public, so no description
+  is ever written; `classifyEvent()` sorts rows entirely on title text, first match wins.
