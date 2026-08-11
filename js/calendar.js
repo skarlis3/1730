@@ -322,10 +322,13 @@
      means a week with nothing scheduled yet disappears, which is exactly
      the week a student most needs to see is coming.
 
-     A week runs Tuesday → Monday, ending on the meeting. That is what
-     puts a Sunday deadline in the week it's due for rather than the week
-     before, and it matches the Canvas convention of setting the due date
-     the night before class (see classes/CLAUDE.md).
+     A week STARTS on the meeting and runs to the following Sunday.
+     Sarah, 11 Aug 2026. So a Sunday deadline belongs to the week that has
+     just been worked through, not to the class two days later — you spend
+     week 11 writing the criticism paper and hand it in at the end of
+     week 11. Same for the Tuesday reminders: a reminder goes out the day
+     after class, so it sits at the foot of the week whose class just met,
+     pointing at what's coming.
 
      Week numbers count MEETINGS. A closure doesn't consume a number: it
      gets an unnumbered band, and the next meeting carries on the count.
@@ -376,8 +379,8 @@
         attendance: false, noReadings: false
       };
 
-      for (var back = 6; back >= 0; back--) {
-        var day = plusDays(meeting, -back);
+      for (var fwd = 0; fwd <= 6; fwd++) {
+        var day = plusDays(meeting, fwd);
         (byDate[dateKey(day)] || []).forEach(function (title) {
           var text = stripLabel(title);
           switch (classifyEvent(title)) {
@@ -487,11 +490,20 @@
         function (text) { return el("li", null, text); }));
     }
 
+    if (w.inclass.length) {
+      body.appendChild(schedGroup("cal-grp-inclass",
+        w.exams.length ? "Also in class" : "In class", w.inclass,
+        function (text) { return el("li", null, text); }));
+    }
+
     if (w.due.length) {
       body.appendChild(schedGroup("cal-grp-due", "Due", w.due, function (it) {
         var item = el("li");
-        /* Only date-stamp a deadline that isn't the class meeting itself —
-           on the meeting day the week's own date already says it. */
+        /* Date-stamp anything not due on the meeting day itself. Now that
+           a week runs Monday → Sunday this matters: a Sunday deadline is
+           six days past the date printed beside the week number. On the
+           meeting day the week's own date already says it, so it's left
+           off there. */
         if (sameDay(it.day, w.day)) {
           item.textContent = it.text;
         } else {
@@ -500,12 +512,6 @@
         }
         return item;
       }));
-    }
-
-    if (w.inclass.length) {
-      body.appendChild(schedGroup("cal-grp-inclass",
-        w.exams.length ? "Also in class" : "In class", w.inclass,
-        function (text) { return el("li", null, text); }));
     }
 
     if (w.reminders.length) {
