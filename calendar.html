@@ -90,19 +90,14 @@
       <div id="cal-views" hidden>
 
         <div class="cal-tabs" role="tablist" aria-label="Calendar views">
-          <button type="button" class="cal-tab is-on" id="tab-upcoming"
-                  role="tab" aria-selected="true" aria-controls="panel-upcoming">Upcoming</button>
-          <button type="button" class="cal-tab" id="tab-month"
-                  role="tab" aria-selected="false" aria-controls="panel-month" tabindex="-1">Month</button>
-        </div>
-
-        <div id="panel-upcoming" role="tabpanel" tabindex="0"
-             aria-labelledby="tab-upcoming">
-          <div id="cal-upcoming"></div>
+          <button type="button" class="cal-tab is-on" id="tab-month"
+                  role="tab" aria-selected="true" aria-controls="panel-month">Month</button>
+          <button type="button" class="cal-tab" id="tab-upcoming"
+                  role="tab" aria-selected="false" aria-controls="panel-upcoming" tabindex="-1">Upcoming</button>
         </div>
 
         <div id="panel-month" role="tabpanel" tabindex="0"
-             aria-labelledby="tab-month" hidden>
+             aria-labelledby="tab-month">
           <div class="cal-controls">
             <button type="button" class="cal-nav" id="cal-prev" aria-label="Previous month">←</button>
             <span id="cal-month-label"></span>
@@ -110,6 +105,11 @@
             <button type="button" class="cal-today" id="cal-today">Today</button>
           </div>
           <div id="cal-month"></div>
+        </div>
+
+        <div id="panel-upcoming" role="tabpanel" tabindex="0"
+             aria-labelledby="tab-upcoming" hidden>
+          <div id="cal-upcoming"></div>
         </div>
 
       </div>

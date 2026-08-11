@@ -233,10 +233,11 @@
 /* ---- narrow ------------------------------------------------ */
 
 @media (max-width: 880px) {
-  /* A seven-column month grid cannot survive a phone. Below the
-     breakpoint the grid drops its fixed height and the chips lose
-     their times, keeping the shape readable; Upcoming is the view
-     that actually works small, so it leads. */
+  /* A seven-column month grid cannot survive a phone at full size.
+     Below the breakpoint the grid drops its fixed height and the chips
+     lose their times, keeping the shape readable. Month is the default
+     view at every width (Sarah, 11 Aug 2026); Upcoming is the second
+     tab, and it's the one that reads most easily on a phone. */
   .cal-day { height: auto; min-height: 66px; padding: 6px 5px; }
   .cal-grid { border-spacing: 3px; }
   .cal-chip-time { display: none; }
