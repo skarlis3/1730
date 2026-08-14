@@ -1,8 +1,21 @@
 # 1730 Site Repo
 
 Course site for ENGL 1730 — Contemporary American Literature, Macomb
-Community College. See `work-with-claude-code/classes/ENGL-1730/CLAUDE.md`
-for full course context (term, readings, assignments, planning docs).
+Community College.
+
+## Read these first, before doing any work in this repo
+
+The rules governing this work are deliberately not kept in this repo, because
+this repo is public. Nothing here repeats them, so skipping these files means
+working without them. **Read each one in full — do not skim for the sections
+that look relevant.**
+
+1. `~/MEGA/work-with-claude-code/CLAUDE.md` — how Sarah wants the work done.
+2. `~/MEGA/work-with-claude-code/classes/CLAUDE.md` — rules shared across every class.
+3. `~/MEGA/work-with-claude-code/classes/ENGL-1730/CLAUDE.md` — this course: term,
+   readings, assignments, planning docs.
+
+Everything below this point is about this repo's own files, and belongs here.
 
 **This repo is the source of truth for the site.** Planning and drafting
 happen in `work-with-claude-code/classes/ENGL-1730/`; site files live here.
