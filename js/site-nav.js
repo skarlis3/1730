@@ -123,8 +123,9 @@
           {
             label: "Policies",
             items: [
-              { id: "late",      label: "Late work",              href: "/late-work.html",         built: true },
-              { id: "integrity", label: "Academic integrity & AI", href: "/academic-integrity.html", built: true }
+              { id: "attendance", label: "Attendance",             href: "/attendance.html",         built: true },
+              { id: "late",       label: "Late work",              href: "/late-work.html",           built: true },
+              { id: "integrity",  label: "Academic integrity & AI", href: "/academic-integrity.html",  built: true }
             ]
           }
         ]
