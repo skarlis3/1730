@@ -111,7 +111,8 @@
           {
             label: "Assignments",
             items: [
-              { id: "freewrites", label: "In-class freewrites", href: "/assignments/freewrites.html", built: true }
+              { id: "readings",   label: "Readings",            href: "/assignments/readings.html",  built: true },
+              { id: "freewrites", label: "In-class freewrites",  href: "/assignments/freewrites.html", built: true }
             ]
           },
           {
