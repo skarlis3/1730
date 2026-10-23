@@ -112,7 +112,8 @@
             label: "Assignments",
             items: [
               { id: "readings",   label: "Readings",            href: "/assignments/readings.html",  built: true },
-              { id: "freewrites", label: "In-class freewrites",  href: "/assignments/freewrites.html", built: true }
+              { id: "freewrites", label: "In-class freewrites",  href: "/assignments/freewrites.html", built: true },
+              { id: "lit-crit-paper", label: "Literary Criticism Paper: \u201cArgue with a Character\u201d", href: "/assignments/lit-crit-paper.html", built: true }
             ]
           },
           {

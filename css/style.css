@@ -790,6 +790,56 @@ h2 {
 }
 
 /* ---------------------------------------------------------------
+   .data-table — a real <table>, for real tabular data (assignment
+   requirements, grading criteria). Added 2026-10-23 with the
+   literary criticism paper page.
+
+   Visually the sibling of .policy-grid: same header treatment, same
+   lift, and alternating surface value as the only row separator --
+   no cell borders, per design rule 1. Unlike .policy-grid it stays a
+   table at every width; the content is short enough to wrap in place
+   on a phone, and stacking would break the column relationship.
+   --------------------------------------------------------------- */
+.data-table {
+  width: 100%; border-collapse: separate; border-spacing: 0;
+  border-radius: var(--radius); overflow: hidden;
+  margin: 8px 0 34px; box-shadow: var(--lift);
+}
+.data-table caption {
+  caption-side: top; text-align: left;
+  color: var(--ink-2); font-size: 14px; padding: 0 0 8px;
+}
+.data-table th,
+.data-table td {
+  padding: 14px 18px; background: var(--surface);
+  text-align: left; vertical-align: top; overflow-wrap: break-word;
+}
+.data-table thead th {
+  background: var(--surface-2); color: var(--accent);
+  font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+  font-weight: 700; padding: 12px 18px;
+}
+.data-table tbody th { font-weight: 700; }
+.data-table tbody tr:nth-child(even) > * { background: var(--wash); }
+
+@media (max-width: 580px) {
+  .data-table th,
+  .data-table td { padding: 12px; }
+}
+
+/* .card-doc — a card holding long-form assignment instructions:
+   numbered steps with nested lists and an h3 sub-head. Scoped to its
+   own class so the short lists in other cards keep their spacing. */
+.card-doc ol, .card-doc ul { padding-left: 1.4em; }
+.card-doc li > p { margin: 0 0 .5em; }
+.card-doc li > ul { margin: 0 0 1em; }
+.card-doc li + li { margin-top: .35em; }
+.card-doc h3 {
+  font-family: var(--f-display); font-weight: 700; letter-spacing: -.02em;
+  font-size: 1.2rem; line-height: 1.25; margin: 28px 0 10px;
+}
+
+/* ---------------------------------------------------------------
    .sidenav-home — route back to the front page, above the groups.
 
    It must NOT carry a --wash fill by default. That fill is how this
