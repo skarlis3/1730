@@ -807,7 +807,7 @@ h2 {
 }
 .data-table caption {
   caption-side: top; text-align: left;
-  color: var(--ink-2); font-size: 14px; padding: 0 0 8px;
+  color: var(--ink); font-size: 14px; padding: 0 0 8px;
 }
 .data-table th,
 .data-table td {
