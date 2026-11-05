@@ -90,6 +90,7 @@
           { id: "final-project-reviews",          label: "Finding and Choosing Reviews", href: "/assignments/final-project-reviews.html" },
           { id: "final-project-check-in",         label: "Check-in",                     href: "/assignments/final-project-check-in.html" },
           { id: "final-project-analysis",         label: "The Analysis",                 href: "/assignments/final-project-analysis.html" },
+          { id: "final-project-your-take",        label: "Your Take",                    href: "/assignments/final-project-your-take.html" },
           { id: "final-project-presentation",     label: "The Presentation",             href: "/assignments/final-project-presentation.html" },
           { id: "final-project-example",          label: "Example Layouts",              href: "/assignments/final-project-example.html" },
           { id: "final-project-presentation-day", label: "Presentation Day",             href: "/assignments/final-project-presentation-day.html" },
