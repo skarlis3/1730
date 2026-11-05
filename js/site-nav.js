@@ -78,6 +78,26 @@
       ]
     },
 
+    /* Row of links across the top of a multi-page assignment, drawn by
+       js/subnav.js. Only the first page of the assignment goes in the
+       sidebar above; every page of it is listed here, in order. */
+    subnavs: {
+      "final-project": {
+        label: "Final Project",
+        items: [
+          { id: "final-project",                  label: "Overview",                     href: "/assignments/final-project.html" },
+          { id: "final-project-reading",          label: "Choosing a Reading",           href: "/assignments/final-project-reading.html" },
+          { id: "final-project-reviews",          label: "Finding and Choosing Reviews", href: "/assignments/final-project-reviews.html" },
+          { id: "final-project-check-in",         label: "Check-in",                     href: "/assignments/final-project-check-in.html" },
+          { id: "final-project-analysis",         label: "The Analysis",                 href: "/assignments/final-project-analysis.html" },
+          { id: "final-project-presentation",     label: "The Presentation",             href: "/assignments/final-project-presentation.html" },
+          { id: "final-project-example",          label: "Example Layouts",              href: "/assignments/final-project-example.html" },
+          { id: "final-project-presentation-day", label: "Presentation Day",             href: "/assignments/final-project-presentation-day.html" },
+          { id: "final-project-grading",          label: "Grading",                      href: "/assignments/final-project-grading.html" }
+        ]
+      }
+    },
+
     /* The five course areas, in top-nav order. Each carries the sidebar
        that appears while you are inside it. */
     /* ONE area, so the sidebar always shows the whole site.
@@ -113,7 +133,8 @@
             items: [
               { id: "readings",   label: "Readings",            href: "/assignments/readings.html",  built: true },
               { id: "freewrites", label: "In-class freewrites",  href: "/assignments/freewrites.html", built: true },
-              { id: "lit-crit-paper", label: "Literary Criticism Paper: \u201cArgue with a Character\u201d", href: "/assignments/lit-crit-paper.html", built: true }
+              { id: "lit-crit-paper", label: "Literary Criticism Paper: \u201cArgue with a Character\u201d", href: "/assignments/lit-crit-paper.html", built: true },
+              { id: "final-project", label: "Final Project", href: "/assignments/final-project.html", built: true }
             ]
           },
           {
