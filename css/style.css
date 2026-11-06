@@ -605,6 +605,20 @@ h2 {
    fill, so they read as text to type rather than as chips. */
 .search-term { font-family: var(--f-mono); font-size: .92em; }
 
+/* ---- 10d. WORKING CHECKLIST -------------------------------------
+   Real checkboxes, saved per device by js/checklist.js. Because they
+   really do toggle, they may look like controls (design rule 2). The
+   whole label is the click target, so the row clears 24px easily.  */
+.checklist-note { color: var(--ink-2); font-size: .95rem; }
+.card-doc ul.checklist { list-style: none; padding-left: 0; }
+.checklist li { display: flex; align-items: flex-start; gap: 10px; }
+.checklist input[type="checkbox"] {
+  flex: none; width: 22px; height: 22px; margin: 2px 0 0;
+  accent-color: var(--accent); cursor: pointer;
+}
+.checklist label { cursor: pointer; padding: 1px 0; }
+.checklist input:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
 /* ---- 11. RESPONSIVE -------------------------------------------
    Laptop first (that's where students do the work), then tablet,
    then phone.                                                    */
