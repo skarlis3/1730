@@ -94,6 +94,7 @@
           { id: "final-project-presentation",     label: "The Presentation",             href: "/assignments/final-project-presentation.html" },
           { id: "final-project-example",          label: "Example Layouts",              href: "/assignments/final-project-example.html" },
           { id: "final-project-presentation-day", label: "Presentation Day",             href: "/assignments/final-project-presentation-day.html" },
+          { id: "final-project-checklist",        label: "Checklist",                    href: "/assignments/final-project-checklist.html" },
           { id: "final-project-grading",          label: "Grading",                      href: "/assignments/final-project-grading.html" }
         ]
       }
