@@ -972,6 +972,9 @@ h2 {
 .card-doc li > p { margin: 0 0 .5em; }
 .card-doc li > ul { margin: 0 0 1em; }
 .card-doc li + li { margin-top: .35em; }
+/* h2 is for list headings inside a single document card (Choosing a
+   Reading), styled to match the h3 sub-head. */
+.card-doc h2,
 .card-doc h3 {
   font-family: var(--f-display); font-weight: 700; letter-spacing: -.02em;
   font-size: 1.2rem; line-height: 1.25; margin: 28px 0 10px;
